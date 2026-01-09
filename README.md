@@ -2,6 +2,8 @@
 
 Quick mini-games to kill time.
 
+**Live:** https://ddangit.vercel.app
+
 ## Games
 
 | Game | Description | Status |
@@ -21,6 +23,7 @@ src/
 │   │   ├── aim-trainer/
 │   │   ├── number-memory/
 │   │   └── typing-speed/
+│   ├── privacy/              # 개인정보처리방침 (AdSense용)
 │   ├── layout.tsx
 │   └── page.tsx
 │
@@ -39,6 +42,9 @@ src/
     ├── hooks/
     ├── types/
     └── constants/
+
+public/
+└── ads.txt                   # AdSense 인증 파일
 ```
 
 ## Quick Start
@@ -79,8 +85,23 @@ make deploy-preview  # 프리뷰 배포
 ## Adding a New Game
 
 1. `src/games/[game-name]/` 폴더 구조 생성
+   - `components/` - 게임 UI 컴포넌트
+   - `hooks/` - 게임 로직 (useXxxGame.ts)
+   - `types/` - 타입 정의
+   - `constants/` - 설정값
+   - `index.ts` - export
 2. `src/app/games/[game-name]/page.tsx` 라우트 생성
 3. `src/shared/constants/games.ts`에 게임 정보 추가
+
+## AdSense
+
+- 스크립트: `src/app/layout.tsx`
+- 광고 컴포넌트: `src/shared/components/ad/AdSlot.tsx`
+- ads.txt: `public/ads.txt`
+
+광고 위치:
+- 홈: 상단, 게임 사이, 하단
+- 게임 페이지: 상단, 하단
 
 ## Tech Stack
 
@@ -88,3 +109,16 @@ make deploy-preview  # 프리뷰 배포
 - TypeScript
 - Tailwind CSS
 - Vercel
+- Google AdSense
+
+## Development Log
+
+### 2025-01-09
+- 프로젝트 초기 설정 (Next.js + TypeScript + Tailwind)
+- 클린 아키텍처 기반 폴더 구조 설계
+- Docker + Makefile 설정
+- 4개 게임 구현 (Reaction, Aim, Memory, Typing)
+- AdSlot 컴포넌트로 광고 위치 확장 가능하게 설계
+- Vercel 배포 설정 (make deploy)
+- Privacy Policy 페이지 추가
+- Google AdSense 연동
