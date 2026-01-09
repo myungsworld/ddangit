@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ddangit
 
-## Getting Started
+Quick mini-games to kill time.
 
-First, run the development server:
+## Project Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+src/
+├── app/                      # Next.js App Router
+│   ├── games/
+│   │   └── [game-name]/      # Game routes
+│   ├── layout.tsx
+│   └── page.tsx              # Home (game list)
+│
+├── games/                    # Game modules (independent)
+│   └── [game-name]/
+│       ├── components/       # Game UI
+│       ├── hooks/            # Game logic
+│       ├── types/            # Type definitions
+│       └── constants/        # Config values
+│
+└── shared/                   # Shared modules
+    ├── components/
+    │   ├── ui/               # Base UI (Button, etc.)
+    │   └── game/             # GameLayout, GameCard, etc.
+    ├── hooks/                # useGameState, etc.
+    ├── types/                # GameMeta, GameState, etc.
+    └── constants/            # GAMES list
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Docker
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+make dev        # Start dev server
+make build      # Build for production
+make prod       # Run production server
+make down       # Stop containers
+```
 
-## Learn More
+### Local
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Adding a New Game
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create `src/games/[game-name]/` folder structure
+2. Create `src/app/games/[game-name]/page.tsx` route
+3. Add game info to `src/shared/constants/games.ts`
 
-## Deploy on Vercel
+## Games
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Reaction - Test your reflexes
+- Aim - Hit the targets
+- Memory - Remember the numbers
+- Typing - Type as fast as you can
