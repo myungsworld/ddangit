@@ -22,13 +22,21 @@ src/
 └── shared/                   # Shared modules
     ├── components/
     │   ├── ui/               # Base UI (Button, etc.)
-    │   └── game/             # GameLayout, GameCard, etc.
+    │   ├── game/             # GameLayout, GameCard, etc.
+    │   └── ad/               # AdSlot for ads
     ├── hooks/                # useGameState, etc.
     ├── types/                # GameMeta, GameState, etc.
     └── constants/            # GAMES list
 ```
 
 ## Quick Start
+
+### Local
+
+```bash
+npm install
+npm run dev
+```
 
 ### Docker
 
@@ -39,11 +47,21 @@ make prod       # Run production server
 make down       # Stop containers
 ```
 
-### Local
+## Deploy
+
+### Setup
+
+1. Get token from https://vercel.com/account/tokens
+2. Create `.env.local`:
+```bash
+VERCEL_TOKEN=your_token_here
+```
+
+### Commands
 
 ```bash
-npm install
-npm run dev
+make deploy          # Deploy to production
+make deploy-preview  # Deploy preview
 ```
 
 ## Adding a New Game
