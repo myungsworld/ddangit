@@ -12,6 +12,7 @@ Quick mini-games to kill time.
 | 🎯 Aim | Hit the targets | ✅ |
 | 🔢 Memory | Remember the numbers | ✅ |
 | ⌨️ Typing | Type as fast as you can | ✅ |
+| 🧱 Sand Tetris | Tetris with sand physics | 🚧 예정 |
 
 ## Project Structure
 
@@ -122,3 +123,40 @@ make deploy-preview  # 프리뷰 배포
 - Vercel 배포 설정 (make deploy)
 - Privacy Policy 페이지 추가
 - Google AdSense 연동
+
+---
+
+## TODO (다음에 할 일)
+
+### 1. 홍보 자동화 시스템
+무료 홍보를 위한 자동 포스팅 스케줄러 구축
+
+**대상 플랫폼:**
+- Reddit (r/WebGames, r/indiegames 등)
+- Twitter/X API
+- Product Hunt
+- Hacker News
+- 디시인사이드, 클리앙 등 국내 커뮤니티
+
+**구현 방향:**
+- Vercel Cron Jobs 또는 GitHub Actions로 스케줄링
+- 각 플랫폼 API 연동
+- 게임별 홍보 문구 템플릿
+- 포스팅 로그 관리
+
+### 2. Sand Tetris (모래 테트리스)
+블록이 바닥이나 다른 블록에 닿으면 흙/모래처럼 흩어지는 물리 기반 테트리스
+
+**핵심 기능:**
+- Canvas 또는 WebGL 기반 렌더링
+- 픽셀/파티클 단위 물리 시뮬레이션
+- 블록 → 모래 입자로 분해
+- 모래가 쌓이면 라인 클리어
+
+**참고:**
+- Noita 게임의 Falling Sand 시뮬레이션
+- Matter.js 또는 커스텀 물리 엔진
+
+### 3. AdSense 승인 후
+- 실제 광고 코드 AdSlot에 적용
+- 광고 성과 모니터링
