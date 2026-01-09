@@ -75,6 +75,28 @@ make deploy          # Production deploy
 make deploy-preview  # Preview deploy
 ```
 
+## Adding a New Game
+
+1. `src/games/[game-name]/` 폴더 구조 생성
+   - `components/` - 게임 UI 컴포넌트
+   - `hooks/` - 게임 로직 (useXxxGame.ts)
+   - `types/` - 타입 정의
+   - `constants/` - 설정값
+   - `utils/` - 유틸리티 함수 (선택)
+   - `index.ts` - export
+2. `src/app/games/[game-name]/page.tsx` 라우트 생성
+3. `src/shared/constants/games.ts`에 게임 정보 추가
+
+## AdSense
+
+- 스크립트: `src/app/layout.tsx`
+- 광고 컴포넌트: `src/shared/components/ad/AdSlot.tsx`
+- ads.txt: `public/ads.txt`
+
+광고 위치:
+- 홈: 상단, 게임 사이, 하단
+- 게임 페이지: 상단, 하단
+
 ## Tech Stack
 
 - Next.js 15
@@ -83,6 +105,30 @@ make deploy-preview  # Preview deploy
 - Canvas 2D (Sand Tetris)
 - Vercel
 - Google AdSense
+
+---
+
+## TODO (다음에 할 일)
+
+### 1. 홍보 자동화 시스템
+무료 홍보를 위한 자동 포스팅 스케줄러 구축
+
+**대상 플랫폼:**
+- Reddit (r/WebGames, r/indiegames 등)
+- Twitter/X API
+- Product Hunt
+- Hacker News
+- 디시인사이드, 클리앙 등 국내 커뮤니티
+
+**구현 방향:**
+- Vercel Cron Jobs 또는 GitHub Actions로 스케줄링
+- 각 플랫폼 API 연동
+- 게임별 홍보 문구 템플릿
+- 포스팅 로그 관리
+
+### 2. AdSense 승인 후
+- [ ] 실제 광고 코드 AdSlot에 적용
+- [ ] 광고 성과 모니터링
 
 ---
 
