@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { AdSlot } from '../ad';
 
 interface GameLayoutProps {
   children: ReactNode;
@@ -12,6 +13,10 @@ interface GameLayoutProps {
 export function GameLayout({ children, title, color }: GameLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col">
+      {/* Top Ad */}
+      <AdSlot size="banner" position="top" />
+
+      {/* Header */}
       <header className="p-4 flex items-center justify-between">
         <Link
           href="/"
@@ -25,15 +30,13 @@ export function GameLayout({ children, title, color }: GameLayoutProps) {
         <div className="w-6" />
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-4">
+      {/* Game Area - flex-1 ensures it takes remaining space */}
+      <main className="flex-1 flex items-center justify-center p-4 min-h-0">
         {children}
       </main>
 
-      <div className="p-4">
-        <div className="h-14 bg-gray-900 rounded-xl flex items-center justify-center text-gray-600 text-xs">
-          Ad
-        </div>
-      </div>
+      {/* Bottom Ad */}
+      <AdSlot size="banner" position="bottom" />
     </div>
   );
 }
