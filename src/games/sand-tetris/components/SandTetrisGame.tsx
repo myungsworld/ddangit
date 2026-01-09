@@ -234,8 +234,12 @@ export function SandTetrisGame() {
     [phase, moveBlockTo, rotateBlock, hardDrop]
   );
 
+  // 터치 이벤트 발생 시 click 이벤트 방지용
+  const touchedRef = useRef(false);
+
   const handleTouchStart = (e: React.TouchEvent) => {
     e.preventDefault();
+    touchedRef.current = true;
     const touch = e.touches[0];
     handleCanvasInteraction(touch.clientX, touch.clientY);
   };
@@ -249,7 +253,16 @@ export function SandTetrisGame() {
     moveBlockTo(gridX);
   };
 
+  const handleTouchEnd = () => {
+    // 터치 후 click 이벤트 무시를 위해 약간의 딜레이
+    setTimeout(() => {
+      touchedRef.current = false;
+    }, 100);
+  };
+
   const handleClick = (e: React.MouseEvent) => {
+    // 터치로 인한 click이면 무시
+    if (touchedRef.current) return;
     handleCanvasInteraction(e.clientX, e.clientY);
   };
 
@@ -356,6 +369,7 @@ export function SandTetrisGame() {
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           onClick={handleClick}
         />
 

@@ -1,18 +1,8 @@
 # ddangit
 
-Quick mini-games to kill time.
+심심할 때 하는 미니게임 모음
 
 **Live:** https://ddangit.vercel.app
-
-## Games
-
-| Game | Description | Status |
-|------|-------------|--------|
-| ⚡ Reaction | Test your reflexes | ✅ |
-| 🎯 Aim | Hit the targets | ✅ |
-| 🔢 Memory | Remember the numbers | ✅ |
-| ⌨️ Typing | Type as fast as you can | ✅ |
-| 🏜️ Sand Tetris | Connect colors left to right | ✅ |
 
 ## Project Structure
 
@@ -25,29 +15,29 @@ src/
 │   │   ├── number-memory/
 │   │   ├── typing-speed/
 │   │   └── sand-tetris/
-│   ├── privacy/              # Privacy Policy (for AdSense)
+│   ├── privacy/              # 개인정보처리방침 (AdSense용)
 │   ├── layout.tsx
 │   └── page.tsx
 │
-├── games/                    # Game modules (independent)
+├── games/                    # 게임 모듈 (독립적)
 │   └── [game-name]/
-│       ├── components/       # Game UI
-│       ├── hooks/            # Game logic
-│       ├── types/            # Type definitions
-│       ├── constants/        # Config values
-│       └── utils/            # Utilities
+│       ├── components/       # 게임 UI
+│       ├── hooks/            # 게임 로직
+│       ├── types/            # 타입 정의
+│       ├── constants/        # 설정값
+│       └── utils/            # 유틸리티 (sand-tetris: 물리 엔진)
 │
-└── shared/                   # Shared modules
+└── shared/                   # 공용 모듈
     ├── components/
-    │   ├── ui/               # Button, etc.
-    │   ├── game/             # GameLayout, GameCard
-    │   └── ad/               # AdSlot
+    │   ├── ui/               # Button 등 기본 UI
+    │   ├── game/             # GameLayout, GameCard 등
+    │   └── ad/               # AdSlot (광고)
     ├── hooks/
     ├── types/
     └── constants/
 
 public/
-└── ads.txt                   # AdSense verification
+└── ads.txt                   # AdSense 인증 파일
 ```
 
 ## Quick Start
@@ -62,17 +52,27 @@ npm run dev
 ### Docker
 
 ```bash
-make dev        # Dev server
-make build      # Production build
-make prod       # Production server
-make down       # Stop containers
+make dev        # 개발 서버
+make build      # 프로덕션 빌드
+make prod       # 프로덕션 서버
+make down       # 컨테이너 중지
 ```
 
 ## Deploy
 
+### Setup
+
+1. https://vercel.com/account/tokens 에서 토큰 발급
+2. `.env.local` 생성:
 ```bash
-make deploy          # Production deploy
-make deploy-preview  # Preview deploy
+VERCEL_TOKEN=your_token_here
+```
+
+### Commands
+
+```bash
+make deploy          # 프로덕션 배포
+make deploy-preview  # 프리뷰 배포
 ```
 
 ## Adding a New Game
@@ -130,72 +130,76 @@ make deploy-preview  # Preview deploy
 - [ ] 실제 광고 코드 AdSlot에 적용
 - [ ] 광고 성과 모니터링
 
----
+### 3. Games
 
-## Game Ideas
+| Game | Description | Status |
+|------|-------------|--------|
+| ⚡ Reaction | 반응속도 테스트 | ✅ |
+| 🎯 Aim | 타겟 맞추기 | ✅ |
+| 🔢 Memory | 숫자 기억하기 | ✅ |
+| ⌨️ Typing | 타이핑 속도 | ✅ |
+| 🧱 Sand Tetris | 같은 색을 좌→우로 연결 | 🚧 |
 
-### Classic Game Variations
+### 4. 추가 게임 아이디어
 
-| Game | Description | Inspiration |
-|------|-------------|-------------|
-| Sand Tetris | Connect same colors from wall to wall | Tetris + Falling Sand |
-| Snake Puzzle | Snake game but solve puzzles | Snake |
-| Breakout Tap | One-tap brick breaker | Breakout |
-| Flappy Tap | Simplified flappy bird | Flappy Bird |
-| 2048 Hex | 2048 on hexagonal grid | 2048 |
-| Minesweeper Mini | Quick 5x5 minesweeper | Minesweeper |
+**클래식 게임 변형:**
+| 게임 | 설명 | 원작 |
+|------|------|------|
+| Sand Tetris | 같은 색을 좌우 벽으로 연결하면 삭제 | 테트리스 + Falling Sand |
+| Snake Puzzle | 뱀 게임인데 퍼즐 형식 | Snake |
+| Breakout Tap | 원탭 벽돌깨기 | Breakout |
+| Flappy Tap | 간단한 플래피버드 | Flappy Bird |
+| 2048 Hex | 육각형 그리드의 2048 | 2048 |
+| Minesweeper Mini | 5x5 빠른 지뢰찾기 | Minesweeper |
 
-### Reflex & Speed Games
+**반사신경 & 속도 게임:**
+| 게임 | 설명 |
+|------|------|
+| Color Match | 색이 맞으면 탭 |
+| Word Flash | 깜빡이는 단어 기억 |
+| Math Speed | 빠른 암산 |
+| Pattern Copy | 보여준 패턴 따라하기 |
+| Sequence Memory | 점점 길어지는 시퀀스 기억 |
+| Sound Memory | 소리로 하는 기억력 게임 |
 
-| Game | Description |
-|------|-------------|
-| Color Match | Tap when colors match |
-| Word Flash | Remember flashing words |
-| Math Speed | Quick arithmetic |
-| Pattern Copy | Copy the shown pattern |
-| Sequence Memory | Remember growing sequences |
-| Sound Memory | Audio version of memory game |
+**퍼즐 & 두뇌 게임:**
+| 게임 | 설명 |
+|------|------|
+| Sliding Puzzle | 클래식 15퍼즐 |
+| Connect Dots | 선 겹치지 않게 점 연결 |
+| Color Sort | 색깔 공을 튜브별로 정리 |
+| Word Search | 숨은 단어 찾기 |
+| Sudoku Mini | 4x4 빠른 스도쿠 |
+| Match 3 | 간단한 3매치 퍼즐 |
 
-### Puzzle & Brain Games
-
-| Game | Description |
-|------|-------------|
-| Sliding Puzzle | Classic 15-puzzle |
-| Connect Dots | Draw lines without crossing |
-| Color Sort | Sort colored balls into tubes |
-| Word Search | Find hidden words |
-| Sudoku Mini | 4x4 quick sudoku |
-| Match 3 | Simple match-3 puzzle |
-
-### Casual & Fun
-
-| Game | Description |
-|------|-------------|
-| Doodle Jump | Endless vertical jumper |
-| Stack Tower | Stack blocks as high as possible |
-| Fruit Slice | Swipe to cut fruits |
-| Bubble Pop | Pop bubbles before they escape |
-| Paper Toss | Throw paper into trash |
-| Fishing | Simple tap fishing game |
+**캐주얼 & 재미:**
+| 게임 | 설명 |
+|------|------|
+| Doodle Jump | 끝없는 점프 게임 |
+| Stack Tower | 블록 최대한 높이 쌓기 |
+| Fruit Slice | 스와이프로 과일 자르기 |
+| Bubble Pop | 풍선 터뜨리기 |
+| Paper Toss | 종이 쓰레기통에 던지기 |
+| Fishing | 간단한 낚시 게임 |
 
 ---
 
 ## Development Log
 
 ### 2025-01-10
-- Sand Tetris major update
-  - New mechanic: Connect same color from left wall to right wall
-  - Clear animation with flashing effect
-  - 4 distinct colors
-  - Block spawns from top, game over when sand reaches danger zone
+- Sand Tetris 대규모 업데이트
+  - 새 메카닉: 같은 색을 왼쪽 벽에서 오른쪽 벽까지 연결하면 삭제
+  - 클리어 애니메이션 (깜빡임 효과)
+  - 4가지 색상으로 정리
+  - 블록이 상단에서 시작, 위험 구역에 모래가 차면 게임오버
 
 ### 2025-01-09
-- Initial project setup (Next.js + TypeScript + Tailwind)
-- Clean architecture folder structure
-- Docker + Makefile setup
-- 4 games implemented (Reaction, Aim, Memory, Typing)
-- AdSlot component for flexible ad placement
-- Vercel deployment (make deploy)
-- Privacy Policy page
-- Google AdSense integration
-- Sand Tetris initial implementation
+- 프로젝트 초기 설정 (Next.js + TypeScript + Tailwind)
+- 클린 아키텍처 기반 폴더 구조 설계
+- Docker + Makefile 설정
+- 4개 게임 구현 (Reaction, Aim, Memory, Typing)
+- AdSlot 컴포넌트로 광고 위치 확장 가능하게 설계
+- Vercel 배포 설정 (make deploy)
+- Privacy Policy 페이지 추가
+- Google AdSense 연동
+- Sand Tetris 구현 (Falling Sand 물리 + 테트리스)
