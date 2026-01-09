@@ -1,4 +1,4 @@
-// 모래 물리 시뮬레이션
+// 모래 물리 시뮬레이션 (개선 버전)
 import { Cell } from '../types';
 import { GAME_CONFIG } from '../constants';
 
@@ -12,18 +12,28 @@ export function createEmptyGrid(): Cell[][] {
 }
 
 // 모래 물리 업데이트 (한 프레임)
-// 아래에서 위로 순회해야 모래가 자연스럽게 떨어짐
-export function updateSandPhysics(grid: Cell[][]): Cell[][] {
+// 여러 번 반복해서 더 자연스러운 물리 구현
+export function updateSandPhysics(grid: Cell[][], iterations: number = 3): Cell[][] {
+  let currentGrid = grid;
+
+  for (let i = 0; i < iterations; i++) {
+    currentGrid = updateSandPhysicsOnce(currentGrid);
+  }
+
+  return currentGrid;
+}
+
+// 모래 물리 업데이트 (1회)
+function updateSandPhysicsOnce(grid: Cell[][]): Cell[][] {
   const newGrid = grid.map(row => [...row]);
 
   // 아래에서 위로 순회 (맨 아래 줄은 제외)
   for (let y = GRID_HEIGHT - 2; y >= 0; y--) {
-    // 랜덤 방향으로 순회 (좌우 균형을 위해)
-    const startX = Math.random() > 0.5 ? 0 : GRID_WIDTH - 1;
-    const endX = startX === 0 ? GRID_WIDTH : -1;
-    const step = startX === 0 ? 1 : -1;
+    // 좌우 랜덤 순회 (균형을 위해)
+    const goLeft = Math.random() > 0.5;
 
-    for (let x = startX; x !== endX; x += step) {
+    for (let i = 0; i < GRID_WIDTH; i++) {
+      const x = goLeft ? i : GRID_WIDTH - 1 - i;
       const cell = newGrid[y][x];
 
       // 빈 공간이면 스킵
@@ -36,18 +46,35 @@ export function updateSandPhysics(grid: Cell[][]): Cell[][] {
         continue;
       }
 
-      // 좌하단이 비어있으면 떨어짐
-      if (x > 0 && newGrid[y + 1][x - 1] === 0) {
-        newGrid[y + 1][x - 1] = cell;
-        newGrid[y][x] = 0;
-        continue;
-      }
+      // 좌우 랜덤 선택
+      const tryLeft = Math.random() > 0.5;
 
-      // 우하단이 비어있으면 떨어짐
-      if (x < GRID_WIDTH - 1 && newGrid[y + 1][x + 1] === 0) {
-        newGrid[y + 1][x + 1] = cell;
-        newGrid[y][x] = 0;
-        continue;
+      if (tryLeft) {
+        // 좌하단 시도
+        if (x > 0 && newGrid[y + 1][x - 1] === 0) {
+          newGrid[y + 1][x - 1] = cell;
+          newGrid[y][x] = 0;
+          continue;
+        }
+        // 우하단 시도
+        if (x < GRID_WIDTH - 1 && newGrid[y + 1][x + 1] === 0) {
+          newGrid[y + 1][x + 1] = cell;
+          newGrid[y][x] = 0;
+          continue;
+        }
+      } else {
+        // 우하단 시도
+        if (x < GRID_WIDTH - 1 && newGrid[y + 1][x + 1] === 0) {
+          newGrid[y + 1][x + 1] = cell;
+          newGrid[y][x] = 0;
+          continue;
+        }
+        // 좌하단 시도
+        if (x > 0 && newGrid[y + 1][x - 1] === 0) {
+          newGrid[y + 1][x - 1] = cell;
+          newGrid[y][x] = 0;
+          continue;
+        }
       }
     }
   }
@@ -58,24 +85,41 @@ export function updateSandPhysics(grid: Cell[][]): Cell[][] {
 // 라인 클리어 체크 및 처리
 export function checkAndClearLines(grid: Cell[][]): { newGrid: Cell[][]; linesCleared: number } {
   let linesCleared = 0;
-  const newGrid = [...grid];
+  const newGrid = grid.map(row => [...row]);
 
   // 아래에서 위로 체크
   for (let y = GRID_HEIGHT - 1; y >= 0; y--) {
-    // 한 줄이 모두 채워졌는지 확인
-    const isFull = newGrid[y].every(cell => cell !== 0);
+    // 한 줄이 90% 이상 채워졌는지 확인 (완전히 꽉 차지 않아도 클리어)
+    const filledCount = newGrid[y].filter(cell => cell !== 0).length;
+    const fillRatio = filledCount / GRID_WIDTH;
 
-    if (isFull) {
+    if (fillRatio >= 0.9) {
       linesCleared++;
       // 해당 줄 제거하고 맨 위에 빈 줄 추가
       newGrid.splice(y, 1);
       newGrid.unshift(Array(GRID_WIDTH).fill(0));
-      // 같은 y 다시 체크 (위에서 내려온 줄)
+      // 같은 y 다시 체크
       y++;
     }
   }
 
   return { newGrid, linesCleared };
+}
+
+// 게임 오버 체크 (상단 영역에 모래가 있으면)
+export function checkGameOver(grid: Cell[][]): boolean {
+  // 상단 10% 영역 체크
+  const dangerZone = Math.floor(GRID_HEIGHT * 0.1);
+
+  for (let y = 0; y < dangerZone; y++) {
+    for (let x = 0; x < GRID_WIDTH; x++) {
+      if (grid[y][x] !== 0) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 // 블록을 모래로 변환 (그리드에 추가)
@@ -129,7 +173,6 @@ export function checkCollision(
     for (let sx = 0; sx < shape[sy].length; sx++) {
       if (shape[sy][sx] === 0) continue;
 
-      // 블록 1칸의 맨 아래 픽셀들만 체크
       const startX = blockX + sx * blockSize;
       const bottomY = blockY + (sy + 1) * blockSize;
 
@@ -146,8 +189,8 @@ export function checkCollision(
           return true;
         }
 
-        // 모래와 충돌
-        if (bottomY >= 0 && grid[bottomY][gridX] !== 0) {
+        // 모래와 충돌 (블록 아래쪽 픽셀들만)
+        if (bottomY >= 0 && bottomY < GRID_HEIGHT && grid[bottomY][gridX] !== 0) {
           return true;
         }
       }
@@ -164,9 +207,8 @@ export function canMove(
   blockX: number,
   blockY: number,
   blockSize: number,
-  direction: 'left' | 'right'
+  dx: number
 ): boolean {
-  const dx = direction === 'left' ? -blockSize : blockSize;
   const newX = blockX + dx;
 
   for (let sy = 0; sy < shape.length; sy++) {

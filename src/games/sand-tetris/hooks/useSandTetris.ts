@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { SandGameState, FallingBlock } from '../types';
-import { GAME_CONFIG, getRandomBlock, BLOCK_COLORS } from '../constants';
+import { GAME_CONFIG, getRandomBlock } from '../constants';
 import {
   createEmptyGrid,
   updateSandPhysics,
@@ -10,6 +10,7 @@ import {
   convertBlockToSand,
   checkCollision,
   canMove,
+  checkGameOver,
 } from '../utils/sandPhysics';
 
 const { GRID_WIDTH, BLOCK_SIZE, INITIAL_DROP_INTERVAL, SAND_UPDATE_INTERVAL, SCORE_PER_LINE } = GAME_CONFIG;
@@ -29,6 +30,7 @@ export function useSandTetris() {
   const sandLoopRef = useRef<number | null>(null);
   const dropLoopRef = useRef<number | null>(null);
   const lastDropTimeRef = useRef<number>(0);
+  const gameOverCheckRef = useRef<number>(0);
 
   // 새 블록 생성
   const spawnBlock = useCallback((): FallingBlock => {
@@ -59,7 +61,7 @@ export function useSandTetris() {
   // 블록 고정 (모래로 변환)
   const lockBlock = useCallback(() => {
     setState((prev) => {
-      if (!prev.currentBlock) return prev;
+      if (!prev.currentBlock || prev.phase !== 'playing') return prev;
 
       // 블록을 모래로 변환
       let newGrid = convertBlockToSand(
@@ -84,23 +86,10 @@ export function useSandTetris() {
       const blockWidth = prev.nextBlock[0]?.length * BLOCK_SIZE || BLOCK_SIZE;
       const newBlock: FallingBlock = {
         shape: prev.nextBlock,
-        colorIndex: Math.floor(Math.random() * BLOCK_COLORS.length) + 1,
+        colorIndex,
         x: Math.floor((GRID_WIDTH - blockWidth) / 2),
         y: 0,
       };
-
-      // 게임 오버 체크 (새 블록이 바로 충돌하면)
-      if (checkCollision(newGrid, newBlock.shape, newBlock.x, newBlock.y, BLOCK_SIZE)) {
-        return {
-          ...prev,
-          phase: 'gameover',
-          grid: newGrid,
-          currentBlock: null,
-          score: newScore,
-          level: newLevel,
-          linesCleared: newTotalLines,
-        };
-      }
 
       return {
         ...prev,
@@ -114,31 +103,34 @@ export function useSandTetris() {
     });
   }, []);
 
-  // 블록 이동
-  const moveBlock = useCallback((direction: 'left' | 'right' | 'down') => {
+  // 블록 이동 (터치 위치 기반)
+  const moveBlockTo = useCallback((targetX: number) => {
     setState((prev) => {
       if (prev.phase !== 'playing' || !prev.currentBlock) return prev;
 
       const block = prev.currentBlock;
+      const blockCenterX = block.x + (block.shape[0].length * BLOCK_SIZE) / 2;
 
-      if (direction === 'down') {
-        // 아래로 이동
-        const newY = block.y + BLOCK_SIZE;
-        if (checkCollision(prev.grid, block.shape, block.x, newY, BLOCK_SIZE)) {
-          return prev; // 충돌하면 lockBlock에서 처리
+      // 타겟 방향으로 한 칸씩 이동
+      let newX = block.x;
+      const step = BLOCK_SIZE;
+
+      if (targetX < blockCenterX - step / 2) {
+        // 왼쪽으로 이동
+        if (canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, -step)) {
+          newX = block.x - step;
         }
-        return {
-          ...prev,
-          currentBlock: { ...block, y: newY },
-        };
+      } else if (targetX > blockCenterX + step / 2) {
+        // 오른쪽으로 이동
+        if (canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, step)) {
+          newX = block.x + step;
+        }
       }
 
-      // 좌우 이동
-      if (canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, direction)) {
-        const dx = direction === 'left' ? -BLOCK_SIZE : BLOCK_SIZE;
+      if (newX !== block.x) {
         return {
           ...prev,
-          currentBlock: { ...block, x: block.x + dx },
+          currentBlock: { ...block, x: newX },
         };
       }
 
@@ -217,7 +209,17 @@ export function useSandTetris() {
       if (time - lastTime >= SAND_UPDATE_INTERVAL) {
         setState((prev) => {
           if (prev.phase !== 'playing') return prev;
-          const newGrid = updateSandPhysics(prev.grid);
+          const newGrid = updateSandPhysics(prev.grid, 2);
+
+          // 게임 오버 체크 (일정 주기마다)
+          gameOverCheckRef.current++;
+          if (gameOverCheckRef.current >= 30) {
+            gameOverCheckRef.current = 0;
+            if (checkGameOver(newGrid)) {
+              return { ...prev, grid: newGrid, phase: 'gameover', currentBlock: null };
+            }
+          }
+
           return { ...prev, grid: newGrid };
         });
         lastTime = time;
@@ -272,7 +274,7 @@ export function useSandTetris() {
   return {
     ...state,
     startGame,
-    moveBlock,
+    moveBlockTo,
     rotateBlock,
     hardDrop,
     reset,

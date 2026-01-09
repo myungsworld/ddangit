@@ -13,6 +13,7 @@ const CANVAS_HEIGHT = GRID_HEIGHT * SCALE;
 
 export function SandTetrisGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const {
     phase,
     grid,
@@ -21,7 +22,7 @@ export function SandTetrisGame() {
     level,
     linesCleared,
     startGame,
-    moveBlock,
+    moveBlockTo,
     rotateBlock,
     hardDrop,
     reset,
@@ -38,6 +39,21 @@ export function SandTetrisGame() {
     // 배경
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // 위험 구역 표시 (상단 10%)
+    const dangerZone = Math.floor(GRID_HEIGHT * 0.1);
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, dangerZone * SCALE);
+
+    // 위험선
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(0, dangerZone * SCALE);
+    ctx.lineTo(CANVAS_WIDTH, dangerZone * SCALE);
+    ctx.stroke();
+    ctx.setLineDash([]);
 
     // 모래 그리기
     for (let y = 0; y < GRID_HEIGHT; y++) {
@@ -69,6 +85,15 @@ export function SandTetrisGame() {
           );
         }
       }
+
+      // 블록 위치 가이드라인 (세로선)
+      const blockCenterX = currentBlock.x + (currentBlock.shape[0].length * BLOCK_SIZE) / 2;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(blockCenterX * SCALE, 0);
+      ctx.lineTo(blockCenterX * SCALE, CANVAS_HEIGHT);
+      ctx.stroke();
     }
   }, [grid, currentBlock]);
 
@@ -80,15 +105,15 @@ export function SandTetrisGame() {
       switch (e.key) {
         case 'ArrowLeft':
           e.preventDefault();
-          moveBlock('left');
+          if (currentBlock) {
+            moveBlockTo(currentBlock.x - BLOCK_SIZE);
+          }
           break;
         case 'ArrowRight':
           e.preventDefault();
-          moveBlock('right');
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          moveBlock('down');
+          if (currentBlock) {
+            moveBlockTo(currentBlock.x + GRID_WIDTH);
+          }
           break;
         case 'ArrowUp':
           e.preventDefault();
@@ -100,7 +125,7 @@ export function SandTetrisGame() {
           break;
       }
     },
-    [phase, moveBlock, rotateBlock, hardDrop]
+    [phase, currentBlock, moveBlockTo, rotateBlock, hardDrop]
   );
 
   useEffect(() => {
@@ -108,38 +133,59 @@ export function SandTetrisGame() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // 터치 컨트롤
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  // 터치/클릭으로 블록 이동
+  const handleCanvasInteraction = useCallback(
+    (clientX: number, clientY: number) => {
+      if (phase !== 'playing' || !canvasRef.current) return;
+
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+
+      // 캔버스 내 좌표 계산
+      const canvasX = clientX - rect.left;
+      const canvasY = clientY - rect.top;
+
+      // 그리드 좌표로 변환
+      const gridX = (canvasX / rect.width) * GRID_WIDTH;
+      const gridY = (canvasY / rect.height) * GRID_HEIGHT;
+
+      // 상단 20% 터치 = 회전
+      if (gridY < GRID_HEIGHT * 0.2) {
+        rotateBlock();
+        return;
+      }
+
+      // 하단 20% 터치 = 하드 드롭
+      if (gridY > GRID_HEIGHT * 0.8) {
+        hardDrop();
+        return;
+      }
+
+      // 중간 영역 = 좌우 이동
+      moveBlockTo(gridX);
+    },
+    [phase, moveBlockTo, rotateBlock, hardDrop]
+  );
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
     const touch = e.touches[0];
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    handleCanvasInteraction(touch.clientX, touch.clientY);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStartRef.current || phase !== 'playing') return;
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    // 터치 이동 중에는 좌우 이동만
+    if (!canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const canvasX = touch.clientX - rect.left;
+    const gridX = (canvasX / rect.width) * GRID_WIDTH;
+    moveBlockTo(gridX);
+  };
 
-    const touch = e.changedTouches[0];
-    const dx = touch.clientX - touchStartRef.current.x;
-    const dy = touch.clientY - touchStartRef.current.y;
-    const absX = Math.abs(dx);
-    const absY = Math.abs(dy);
-
-    const threshold = 30;
-
-    if (absX < threshold && absY < threshold) {
-      // 탭 = 회전
-      rotateBlock();
-    } else if (absX > absY) {
-      // 좌우 스와이프
-      if (dx > threshold) moveBlock('right');
-      else if (dx < -threshold) moveBlock('left');
-    } else {
-      // 상하 스와이프
-      if (dy > threshold) hardDrop();
-    }
-
-    touchStartRef.current = null;
+  const handleClick = (e: React.MouseEvent) => {
+    handleCanvasInteraction(e.clientX, e.clientY);
   };
 
   // 게임 오버 화면
@@ -192,12 +238,12 @@ export function SandTetrisGame() {
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
           Sand Tetris
         </h1>
-        <p className="text-gray-400 mb-4">Tap to start</p>
-        <div className="text-sm text-gray-500 text-center">
-          <p>← → : Move</p>
-          <p>↑ : Rotate</p>
-          <p>↓ : Soft drop</p>
-          <p>Space : Hard drop</p>
+        <p className="text-gray-400 mb-6">Tap to start</p>
+        <div className="text-sm text-gray-500 text-center space-y-1">
+          <p>Touch screen to control:</p>
+          <p className="text-gray-600">Top = Rotate</p>
+          <p className="text-gray-600">Middle = Move left/right</p>
+          <p className="text-gray-600">Bottom = Drop</p>
         </div>
       </div>
     );
@@ -205,9 +251,9 @@ export function SandTetrisGame() {
 
   // 게임 플레이 화면
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div ref={containerRef} className="flex flex-col items-center gap-4 w-full">
       {/* 점수 */}
-      <div className="flex justify-between w-full max-w-xs text-sm">
+      <div className="flex justify-between w-full max-w-xs text-sm px-2">
         <div className="text-gray-400">
           Score: <span className="text-white font-bold">{score}</span>
         </div>
@@ -216,50 +262,36 @@ export function SandTetrisGame() {
         </div>
       </div>
 
-      {/* 캔버스 */}
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_WIDTH}
-        height={CANVAS_HEIGHT}
-        className="rounded-xl border-2 border-gray-700"
-        style={{ touchAction: 'none' }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      />
+      {/* 터치 영역 가이드 */}
+      <div className="relative w-full max-w-xs">
+        {/* 캔버스 */}
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          className="w-full rounded-xl border-2 border-gray-700 cursor-pointer"
+          style={{ touchAction: 'none', aspectRatio: `${GRID_WIDTH}/${GRID_HEIGHT}` }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onClick={handleClick}
+        />
 
-      {/* 모바일 컨트롤 */}
-      <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
-        <button
-          onClick={() => moveBlock('left')}
-          className="h-14 bg-gray-700 text-white text-xl font-bold rounded-xl active:bg-gray-600"
-        >
-          ←
-        </button>
-        <button
-          onClick={rotateBlock}
-          className="h-14 bg-gray-700 text-white text-xl font-bold rounded-xl active:bg-gray-600"
-        >
-          ↻
-        </button>
-        <button
-          onClick={() => moveBlock('right')}
-          className="h-14 bg-gray-700 text-white text-xl font-bold rounded-xl active:bg-gray-600"
-        >
-          →
-        </button>
-        <button
-          onClick={() => moveBlock('down')}
-          className="h-14 bg-gray-700 text-white text-sm font-bold rounded-xl active:bg-gray-600"
-        >
-          ↓
-        </button>
-        <button
-          onClick={hardDrop}
-          className="h-14 bg-amber-600 text-white text-sm font-bold rounded-xl active:bg-amber-500 col-span-2"
-        >
-          Drop
-        </button>
+        {/* 터치 영역 오버레이 (처음 몇 초간만 표시) */}
+        <div className="absolute inset-0 pointer-events-none flex flex-col opacity-30">
+          <div className="h-[20%] border-b border-dashed border-white/30 flex items-center justify-center">
+            <span className="text-white/50 text-xs">↻ Rotate</span>
+          </div>
+          <div className="h-[60%] flex items-center justify-center">
+            <span className="text-white/50 text-xs">← Move →</span>
+          </div>
+          <div className="h-[20%] border-t border-dashed border-white/30 flex items-center justify-center">
+            <span className="text-white/50 text-xs">↓ Drop</span>
+          </div>
+        </div>
       </div>
+
+      {/* 조작 힌트 */}
+      <p className="text-gray-600 text-xs">Touch screen to play</p>
     </div>
   );
 }
