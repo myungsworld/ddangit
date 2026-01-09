@@ -7,18 +7,18 @@ export const GAME_CONFIG = {
   color: '#D97706',
 
   // 그리드 크기 (픽셀 단위)
-  GRID_WIDTH: 100,
-  GRID_HEIGHT: 150,
+  GRID_WIDTH: 80,
+  GRID_HEIGHT: 120,
 
-  // 블록 크기 (픽셀 단위, 블록 1칸 = 10픽셀)
-  BLOCK_SIZE: 10,
+  // 블록 크기 (픽셀 단위, 블록 1칸 = 6픽셀)
+  BLOCK_SIZE: 6,
 
   // 게임 속도
-  INITIAL_DROP_INTERVAL: 500,  // ms
-  SAND_UPDATE_INTERVAL: 16,    // ms (약 60fps)
+  DROP_INTERVAL: 400,        // 블록 떨어지는 간격 (ms)
+  SAND_UPDATE_INTERVAL: 20,  // 모래 물리 업데이트 간격 (ms)
 
-  // 점수
-  SCORE_PER_LINE: 100,
+  // 위험선 (상단 20%)
+  DANGER_ZONE_RATIO: 0.2,
 };
 
 // 테트리스 블록 모양들 (1칸 = BLOCK_SIZE 픽셀)
@@ -39,21 +39,18 @@ export const BLOCK_SHAPES: BlockShape[] = [
   [[0, 0, 1], [1, 1, 1]],
 ];
 
-// 블록 색상들
+// 4가지 구분되는 색상
 export const BLOCK_COLORS = [
-  '#EF4444', // 빨강
-  '#F59E0B', // 주황
-  '#EAB308', // 노랑
-  '#22C55E', // 초록
-  '#06B6D4', // 청록
-  '#3B82F6', // 파랑
-  '#8B5CF6', // 보라
+  '#FF4757', // 빨강
+  '#FFA502', // 주황
+  '#2ED573', // 초록
+  '#3742FA', // 파랑
 ];
 
 // 랜덤 블록 생성
 export function getRandomBlock(): { shape: BlockShape; colorIndex: number } {
   const shapeIndex = Math.floor(Math.random() * BLOCK_SHAPES.length);
-  const colorIndex = Math.floor(Math.random() * BLOCK_COLORS.length) + 1; // 1부터 시작 (0은 빈 공간)
+  const colorIndex = Math.floor(Math.random() * BLOCK_COLORS.length) + 1; // 1~5 (0은 빈 공간)
   return {
     shape: BLOCK_SHAPES[shapeIndex],
     colorIndex,
