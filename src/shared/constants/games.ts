@@ -37,4 +37,13 @@ export const GAMES: GameMeta[] = [
     color: '#F59E0B',
     estimatedTime: '1m',
   },
+  {
+    id: 'sand-tetris',
+    name: 'Sand Tetris',
+    description: 'Tetris with sand physics',
+    icon: '🧱',
+    path: '/games/sand-tetris',
+    color: '#D97706',
+    estimatedTime: '3m',
+  },
 ];

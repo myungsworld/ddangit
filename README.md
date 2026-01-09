@@ -12,7 +12,7 @@ Quick mini-games to kill time.
 | 🎯 Aim | Hit the targets | ✅ |
 | 🔢 Memory | Remember the numbers | ✅ |
 | ⌨️ Typing | Type as fast as you can | ✅ |
-| 🧱 Sand Tetris | Tetris with sand physics | 🚧 예정 |
+| 🧱 Sand Tetris | Tetris with sand physics | ✅ |
 
 ## Project Structure
 
@@ -23,7 +23,8 @@ src/
 │   │   ├── reaction-speed/
 │   │   ├── aim-trainer/
 │   │   ├── number-memory/
-│   │   └── typing-speed/
+│   │   ├── typing-speed/
+│   │   └── sand-tetris/
 │   ├── privacy/              # 개인정보처리방침 (AdSense용)
 │   ├── layout.tsx
 │   └── page.tsx
@@ -33,7 +34,8 @@ src/
 │       ├── components/       # 게임 UI
 │       ├── hooks/            # 게임 로직
 │       ├── types/            # 타입 정의
-│       └── constants/        # 설정값
+│       ├── constants/        # 설정값
+│       └── utils/            # 유틸리티 (sand-tetris: 물리 엔진)
 │
 └── shared/                   # 공용 모듈
     ├── components/
@@ -90,6 +92,7 @@ make deploy-preview  # 프리뷰 배포
    - `hooks/` - 게임 로직 (useXxxGame.ts)
    - `types/` - 타입 정의
    - `constants/` - 설정값
+   - `utils/` - 유틸리티 함수 (선택)
    - `index.ts` - export
 2. `src/app/games/[game-name]/page.tsx` 라우트 생성
 3. `src/shared/constants/games.ts`에 게임 정보 추가
@@ -109,6 +112,7 @@ make deploy-preview  # 프리뷰 배포
 - Next.js 15
 - TypeScript
 - Tailwind CSS
+- Canvas 2D (Sand Tetris)
 - Vercel
 - Google AdSense
 
@@ -123,6 +127,7 @@ make deploy-preview  # 프리뷰 배포
 - Vercel 배포 설정 (make deploy)
 - Privacy Policy 페이지 추가
 - Google AdSense 연동
+- Sand Tetris 구현 (Falling Sand 물리 + 테트리스)
 
 ---
 
@@ -144,19 +149,11 @@ make deploy-preview  # 프리뷰 배포
 - 게임별 홍보 문구 템플릿
 - 포스팅 로그 관리
 
-### 2. Sand Tetris (모래 테트리스)
-블록이 바닥이나 다른 블록에 닿으면 흙/모래처럼 흩어지는 물리 기반 테트리스
-
-**핵심 기능:**
-- Canvas 또는 WebGL 기반 렌더링
-- 픽셀/파티클 단위 물리 시뮬레이션
-- 블록 → 모래 입자로 분해
-- 모래가 쌓이면 라인 클리어
-
-**참고:**
-- Noita 게임의 Falling Sand 시뮬레이션
-- Matter.js 또는 커스텀 물리 엔진
-
-### 3. AdSense 승인 후
+### 2. AdSense 승인 후
 - 실제 광고 코드 AdSlot에 적용
 - 광고 성과 모니터링
+
+### 3. 추가 게임 아이디어
+- Color Match (색상 매칭)
+- Sequence Memory (시퀀스 기억)
+- Math Speed (암산 속도)
