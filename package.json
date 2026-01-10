@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@upstash/redis": "^1.36.1",
-    "@vercel/kv": "^3.0.0",
     "crypto-js": "^4.2.0",
     "next": "16.1.1",
     "oauth-1.0a": "^2.2.6",

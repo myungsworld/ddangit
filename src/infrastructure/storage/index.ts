@@ -1,14 +1,13 @@
 // Storage Factory
 // STORAGE_TYPE 환경변수로 어댑터 선택
 // - memory: 인메모리 (기본값, Docker 개발환경)
-// - vercel-kv: Vercel KV (프로덕션)
+// - vercel-kv: Upstash Redis (프로덕션)
 
 import { StorageAdapter, RankingEntry, rankingKey } from './types';
 import { MemoryAdapter } from './adapters/memory';
 
 let storageInstance: StorageAdapter | null = null;
 
-// Upstash Redis 어댑터 (@upstash/redis 사용)
 class UpstashAdapter implements StorageAdapter {
   private redis: unknown = null;
 
@@ -19,7 +18,6 @@ class UpstashAdapter implements StorageAdapter {
         url: process.env.KV_REST_API_URL!,
         token: process.env.KV_REST_API_TOKEN!,
       });
-      console.log('[Storage] Upstash Redis created with URL:', process.env.KV_REST_API_URL?.slice(0, 30));
     }
     return this.redis as {
       get: <T>(key: string) => Promise<T | null>;
@@ -77,21 +75,14 @@ export async function getStorage(): Promise<StorageAdapter> {
   if (storageInstance) return storageInstance;
 
   const storageType = process.env.STORAGE_TYPE || 'memory';
-  const hasKVConfig = !!process.env.KV_REST_API_URL && !!process.env.KV_REST_API_TOKEN;
-
-  console.log('[Storage] STORAGE_TYPE:', storageType);
-  console.log('[Storage] KV configured:', hasKVConfig);
 
   if (storageType === 'vercel-kv') {
     storageInstance = new UpstashAdapter();
-    console.log('[Storage] Using Upstash Redis');
   } else {
     storageInstance = new MemoryAdapter();
-    console.log('[Storage] Using in-memory storage');
   }
 
   return storageInstance;
 }
 
-// 타입 재export
 export * from './types';
