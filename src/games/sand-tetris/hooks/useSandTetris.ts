@@ -45,6 +45,7 @@ export function useSandTetris() {
   const [state, setState] = useState<GameState>(initialState);
   const gameLoopRef = useRef<number | null>(null);
   const stateRef = useRef<GameState>(state);
+  const skipNextDropRef = useRef(false);  // hardDrop 직후 자동 드롭 스킵
 
   stateRef.current = state;
 
@@ -116,8 +117,8 @@ export function useSandTetris() {
         }
       }
 
-      // 블록 드롭 (클리어 중이 아닐 때만)
-      if (newPhase === 'playing' && now - lastDropTime >= DROP_INTERVAL && newBlock) {
+      // 블록 드롭 (클리어 중이 아닐 때만, hardDrop 직후에는 스킵)
+      if (newPhase === 'playing' && now - lastDropTime >= DROP_INTERVAL && newBlock && !skipNextDropRef.current) {
         const nextY = newBlock.y + BLOCK_SIZE;
 
         if (checkCollision(newGrid, newBlock.shape, newBlock.x, nextY, BLOCK_SIZE)) {
@@ -146,6 +147,12 @@ export function useSandTetris() {
 
         lastDropTime = now;
         needsUpdate = true;
+      }
+
+      // hardDrop 스킵 플래그 리셋
+      if (skipNextDropRef.current) {
+        skipNextDropRef.current = false;
+        lastDropTime = now;  // 타이머도 리셋
       }
 
       if (needsUpdate) {
@@ -280,6 +287,9 @@ export function useSandTetris() {
           currentBlock: null,
         };
       }
+
+      // 다음 자동 드롭 스킵 (hardDrop 직후 바로 떨어지는 것 방지)
+      skipNextDropRef.current = true;
 
       return {
         ...prev,
