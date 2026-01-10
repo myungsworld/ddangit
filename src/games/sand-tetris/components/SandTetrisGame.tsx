@@ -1,9 +1,9 @@
 'use client';
 
 import { useRef, useEffect, useCallback, useMemo } from 'react';
-import Link from 'next/link';
 import { useSandTetris } from '../hooks/useSandTetris';
 import { GAME_CONFIG, BLOCK_COLORS } from '../constants';
+import { GameResult } from '@/shared/components/game';
 
 const { GRID_WIDTH, GRID_HEIGHT, BLOCK_SIZE, DANGER_ZONE_RATIO } = GAME_CONFIG;
 
@@ -283,49 +283,22 @@ export function SandTetrisGame() {
   // 게임 오버 화면
   if (phase === 'gameover') {
     return (
-      <div className="w-full max-w-md mx-auto text-center p-8">
-        <div className="mb-8">
-          <p className="text-gray-500 uppercase tracking-widest text-sm mb-2">Game Over</p>
-          <div
-            className="text-6xl font-bold mb-4"
-            style={{ color: GAME_CONFIG.color }}
-          >
-            {formatScore(score)}
-          </div>
-          <p className="text-gray-400">pixels cleared</p>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={reset}
-              className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-100 transition-all active:scale-95"
-            >
-              Play Again
-            </button>
-            <button
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({
-                    title: 'Sand Tetris',
-                    text: `I cleared ${formatScore(score)} pixels!`,
-                    url: window.location.href,
-                  });
-                }
-              }}
-              className="px-8 py-4 bg-gray-800 text-white font-bold rounded-xl hover:bg-gray-700 transition-all active:scale-95 border border-gray-700"
-            >
-              Share
-            </button>
-          </div>
-          <Link
-            href="/"
-            className="text-gray-500 hover:text-gray-300 transition-colors text-sm"
-          >
-            ← Try other games
-          </Link>
-        </div>
-      </div>
+      <GameResult
+        title="Game Over"
+        score={formatScore(score)}
+        subtitle="pixels cleared"
+        color={GAME_CONFIG.color}
+        onRetry={reset}
+        onShare={() => {
+          if (navigator.share) {
+            navigator.share({
+              title: 'Sand Tetris',
+              text: `I cleared ${formatScore(score)} pixels!`,
+              url: window.location.href,
+            });
+          }
+        }}
+      />
     );
   }
 

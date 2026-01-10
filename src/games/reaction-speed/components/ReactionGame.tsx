@@ -2,6 +2,7 @@
 
 import { useReactionGame } from '../hooks/useReactionGame';
 import { GAME_CONFIG, getRating } from '../constants';
+import { GameResult } from '@/shared/components/game';
 
 export function ReactionGame() {
   const {
@@ -68,18 +69,25 @@ export function ReactionGame() {
   const message = getMessage();
 
   if (phase === 'result') {
+    const rating = getRating(averageTime);
     return (
-      <div className="w-full max-w-md mx-auto text-center p-8">
-        <h2 className="text-xl text-gray-400 mb-4">Average</h2>
-        <div
-          className="text-6xl font-bold mb-2"
-          style={{ color: GAME_CONFIG.color }}
-        >
-          {averageTime}ms
-        </div>
-        <p className="text-2xl mb-6">{message.sub}</p>
-
-        <div className="mb-8 space-y-2">
+      <GameResult
+        title="Average"
+        score={`${averageTime}ms`}
+        subtitle={`${rating.emoji} ${rating.label}`}
+        color={GAME_CONFIG.color}
+        onRetry={reset}
+        onShare={() => {
+          if (navigator.share) {
+            navigator.share({
+              title: 'Reaction Test',
+              text: `My avg: ${averageTime}ms! Try it!`,
+              url: window.location.href,
+            });
+          }
+        }}
+      >
+        <div className="space-y-2">
           {attempts.map((time, i) => (
             <div
               key={i}
@@ -90,30 +98,7 @@ export function ReactionGame() {
             </div>
           ))}
         </div>
-
-        <div className="flex gap-4 justify-center">
-          <button
-            onClick={reset}
-            className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-100 transition-all active:scale-95"
-          >
-            Retry
-          </button>
-          <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: 'Reaction Test',
-                  text: `My avg: ${averageTime}ms! Try it!`,
-                  url: window.location.href,
-                });
-              }
-            }}
-            className="px-8 py-4 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-600 transition-all active:scale-95"
-          >
-            Share
-          </button>
-        </div>
-      </div>
+      </GameResult>
     );
   }
 

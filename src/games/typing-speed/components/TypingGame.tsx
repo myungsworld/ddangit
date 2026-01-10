@@ -3,6 +3,7 @@
 import { useRef, useEffect } from 'react';
 import { useTypingGame } from '../hooks/useTypingGame';
 import { GAME_CONFIG } from '../constants';
+import { GameResult } from '@/shared/components/game';
 
 export function TypingGame() {
   const {
@@ -29,18 +30,23 @@ export function TypingGame() {
   // 결과 화면
   if (phase === 'result') {
     return (
-      <div className="w-full max-w-md mx-auto text-center p-8">
-        <h2 className="text-xl text-gray-400 mb-4">WPM</h2>
-        <div
-          className="text-6xl font-bold mb-2"
-          style={{ color: GAME_CONFIG.color }}
-        >
-          {wpm}
-        </div>
-        <p className="text-xl text-gray-400 mb-6">{accuracy}% accuracy</p>
-
-        {/* 상세 결과 */}
-        <div className="mb-8 space-y-2 text-sm text-gray-400">
+      <GameResult
+        title="WPM"
+        score={String(wpm)}
+        subtitle={`${accuracy}% accuracy`}
+        color={GAME_CONFIG.color}
+        onRetry={reset}
+        onShare={() => {
+          if (navigator.share) {
+            navigator.share({
+              title: 'Typing Test',
+              text: `${wpm} WPM, ${accuracy}% accuracy!`,
+              url: window.location.href,
+            });
+          }
+        }}
+      >
+        <div className="space-y-2 text-sm text-gray-400">
           <div className="flex justify-between">
             <span>Time</span>
             <span>{timeInSeconds}s</span>
@@ -50,30 +56,7 @@ export function TypingGame() {
             <span>{text.length}</span>
           </div>
         </div>
-
-        <div className="flex gap-4 justify-center">
-          <button
-            onClick={reset}
-            className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-100 transition-all active:scale-95"
-          >
-            Retry
-          </button>
-          <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: 'Typing Test',
-                  text: `${wpm} WPM, ${accuracy}% accuracy!`,
-                  url: window.location.href,
-                });
-              }
-            }}
-            className="px-8 py-4 bg-gray-700 text-white font-bold rounded-xl hover:bg-gray-600 transition-all active:scale-95"
-          >
-            Share
-          </button>
-        </div>
-      </div>
+      </GameResult>
     );
   }
 
