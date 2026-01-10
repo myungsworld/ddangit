@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useRef } from 'react';
-import { GameState, FallingBlock, ClearingPixel } from '../types';
-import { GAME_CONFIG, getRandomBlock } from '../constants';
+import { useState, useCallback, useRef } from "react";
+import { GameState, FallingBlock, ClearingPixel } from "../types";
+import { GAME_CONFIG, getRandomBlock } from "../constants";
 import {
   createEmptyGrid,
   updateSandPhysics,
@@ -12,13 +12,14 @@ import {
   checkCollision,
   canMove,
   checkGameOver,
-} from '../utils/sandPhysics';
+} from "../utils/sandPhysics";
 
-const { GRID_WIDTH, BLOCK_SIZE, DROP_INTERVAL, SAND_UPDATE_INTERVAL } = GAME_CONFIG;
+const { GRID_WIDTH, BLOCK_SIZE, DROP_INTERVAL, SAND_UPDATE_INTERVAL } =
+  GAME_CONFIG;
 
 // 애니메이션 설정
-const CLEAR_ANIMATION_FRAMES = 8;  // 깜빡임 프레임 수
-const CLEAR_ANIMATION_INTERVAL = 50;  // 각 프레임 간격 (ms)
+const CLEAR_ANIMATION_FRAMES = 8; // 깜빡임 프레임 수
+const CLEAR_ANIMATION_INTERVAL = 50; // 각 프레임 간격 (ms)
 
 // 새 블록 생성 함수 (상단에서 시작)
 function createNewBlock(): FallingBlock {
@@ -28,12 +29,12 @@ function createNewBlock(): FallingBlock {
     shape,
     colorIndex,
     x: Math.floor((GRID_WIDTH - blockWidth) / 2),
-    y: 0,  // 상단에서 시작
+    y: 0, // 상단에서 시작
   };
 }
 
 const initialState: GameState = {
-  phase: 'idle',
+  phase: "idle",
   grid: createEmptyGrid(),
   currentBlock: null,
   score: 0,
@@ -45,8 +46,8 @@ export function useSandTetris() {
   const [state, setState] = useState<GameState>(initialState);
   const gameLoopRef = useRef<number | null>(null);
   const stateRef = useRef<GameState>(state);
-  const skipNextDropRef = useRef(false);  // hardDrop 직후 자동 드롭 스킵
-  const lastHardDropTimeRef = useRef(0);  // 마지막 hardDrop 시간 (연속 호출 방지)
+  const skipNextDropRef = useRef(false); // hardDrop 직후 자동 드롭 스킵
+  const lastHardDropTimeRef = useRef(0); // 마지막 hardDrop 시간 (연속 호출 방지)
 
   stateRef.current = state;
 
@@ -61,23 +62,26 @@ export function useSandTetris() {
       const currentState = stateRef.current;
 
       // 게임오버 또는 idle이면 루프 종료
-      if (currentState.phase === 'gameover' || currentState.phase === 'idle') {
+      if (currentState.phase === "gameover" || currentState.phase === "idle") {
         return;
       }
 
       // 클리어 애니메이션 중
-      if (currentState.phase === 'clearing') {
+      if (currentState.phase === "clearing") {
         if (now - lastClearAnimTime >= CLEAR_ANIMATION_INTERVAL) {
           const nextFrame = currentState.clearingFrame + 1;
 
           if (nextFrame >= CLEAR_ANIMATION_FRAMES) {
             // 애니메이션 완료 - 픽셀 삭제하고 게임 재개
-            const newGrid = clearPixels(currentState.grid, currentState.clearingPixels);
+            const newGrid = clearPixels(
+              currentState.grid,
+              currentState.clearingPixels
+            );
             const clearedCount = currentState.clearingPixels.length;
 
             setState({
               ...currentState,
-              phase: 'playing',
+              phase: "playing",
               grid: newGrid,
               score: currentState.score + clearedCount,
               clearingPixels: [],
@@ -101,7 +105,7 @@ export function useSandTetris() {
       let needsUpdate = false;
       let newGrid = currentState.grid;
       let newBlock = currentState.currentBlock;
-      let newPhase: GameState['phase'] = 'playing';
+      let newPhase: GameState["phase"] = "playing";
       let newClearingPixels: ClearingPixel[] = [];
 
       // 모래 물리 업데이트
@@ -114,15 +118,22 @@ export function useSandTetris() {
         const pixelsToClear = findPixelsToClear(newGrid);
         if (pixelsToClear.length > 0) {
           newClearingPixels = pixelsToClear;
-          newPhase = 'clearing';
+          newPhase = "clearing";
         }
       }
 
       // 블록 드롭 (클리어 중이 아닐 때만, hardDrop 직후에는 스킵)
-      if (newPhase === 'playing' && now - lastDropTime >= DROP_INTERVAL && newBlock && !skipNextDropRef.current) {
+      if (
+        newPhase === "playing" &&
+        now - lastDropTime >= DROP_INTERVAL &&
+        newBlock &&
+        !skipNextDropRef.current
+      ) {
         const nextY = newBlock.y + BLOCK_SIZE;
 
-        if (checkCollision(newGrid, newBlock.shape, newBlock.x, nextY, BLOCK_SIZE)) {
+        if (
+          checkCollision(newGrid, newBlock.shape, newBlock.x, nextY, BLOCK_SIZE)
+        ) {
           // 충돌 - 블록을 모래로 변환
           newGrid = convertBlockToSand(
             newGrid,
@@ -135,7 +146,7 @@ export function useSandTetris() {
 
           // 게임오버 체크
           if (checkGameOver(newGrid)) {
-            newPhase = 'gameover';
+            newPhase = "gameover";
             newBlock = null;
           } else {
             // 새 블록 생성
@@ -153,7 +164,7 @@ export function useSandTetris() {
       // hardDrop 스킵 플래그 리셋
       if (skipNextDropRef.current) {
         skipNextDropRef.current = false;
-        lastDropTime = now;  // 타이머도 리셋
+        lastDropTime = now; // 타이머도 리셋
       }
 
       if (needsUpdate) {
@@ -167,7 +178,7 @@ export function useSandTetris() {
         });
       }
 
-      if (newPhase === 'playing' || newPhase === 'clearing') {
+      if (newPhase === "playing" || newPhase === "clearing") {
         gameLoopRef.current = requestAnimationFrame(loop);
       }
     };
@@ -182,7 +193,7 @@ export function useSandTetris() {
     }
 
     const newState: GameState = {
-      phase: 'playing',
+      phase: "playing",
       grid: createEmptyGrid(),
       currentBlock: createNewBlock(),
       score: 0,
@@ -199,7 +210,7 @@ export function useSandTetris() {
   // 블록 이동
   const moveBlockTo = useCallback((targetX: number) => {
     setState((prev) => {
-      if (prev.phase !== 'playing' || !prev.currentBlock) return prev;
+      if (prev.phase !== "playing" || !prev.currentBlock) return prev;
 
       const block = prev.currentBlock;
       const blockCenterX = block.x + (block.shape[0].length * BLOCK_SIZE) / 2;
@@ -208,11 +219,15 @@ export function useSandTetris() {
       let newX = block.x;
 
       if (targetX < blockCenterX - step / 2) {
-        if (canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, -step)) {
+        if (
+          canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, -step)
+        ) {
           newX = block.x - step;
         }
       } else if (targetX > blockCenterX + step / 2) {
-        if (canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, step)) {
+        if (
+          canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, step)
+        ) {
           newX = block.x + step;
         }
       }
@@ -231,7 +246,7 @@ export function useSandTetris() {
   // 블록 회전
   const rotateBlock = useCallback(() => {
     setState((prev) => {
-      if (prev.phase !== 'playing' || !prev.currentBlock) return prev;
+      if (prev.phase !== "playing" || !prev.currentBlock) return prev;
 
       const block = prev.currentBlock;
       const rows = block.shape.length;
@@ -260,16 +275,24 @@ export function useSandTetris() {
   // 하드 드롭 (연속 호출 방지: 300ms 쓰로틀)
   const hardDrop = useCallback(() => {
     const now = performance.now();
-    if (now - lastHardDropTimeRef.current < 300) return;  // 300ms 내 재호출 무시
+    if (now - lastHardDropTimeRef.current < 150) return; // 300ms 내 재호출 무시
     lastHardDropTimeRef.current = now;
 
     setState((prev) => {
-      if (prev.phase !== 'playing' || !prev.currentBlock) return prev;
+      if (prev.phase !== "playing" || !prev.currentBlock) return prev;
 
       const block = prev.currentBlock;
       let dropY = block.y;
 
-      while (!checkCollision(prev.grid, block.shape, block.x, dropY + BLOCK_SIZE, BLOCK_SIZE)) {
+      while (
+        !checkCollision(
+          prev.grid,
+          block.shape,
+          block.x,
+          dropY + BLOCK_SIZE,
+          BLOCK_SIZE
+        )
+      ) {
         dropY += BLOCK_SIZE;
       }
 
@@ -288,7 +311,7 @@ export function useSandTetris() {
         return {
           ...prev,
           grid: newGrid,
-          phase: 'gameover',
+          phase: "gameover",
           currentBlock: null,
         };
       }
