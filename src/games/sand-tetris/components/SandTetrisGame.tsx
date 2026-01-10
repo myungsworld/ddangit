@@ -13,6 +13,7 @@ const CANVAS_HEIGHT = GRID_HEIGHT * SCALE;
 
 export function SandTetrisGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
   const {
     phase,
     grid,
@@ -310,13 +311,23 @@ export function SandTetrisGame() {
     );
   }
 
+  // 게임 시작 + 스크롤
+  const handleStartGame = useCallback(() => {
+    startGame();
+    // 게임 시작 후 게임 영역으로 스크롤
+    setTimeout(() => {
+      gameContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, [startGame]);
+
   // 시작 화면
   if (phase === 'idle') {
     return (
       <div
+        ref={gameContainerRef}
         className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center cursor-pointer rounded-2xl"
         style={{ background: 'linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%)' }}
-        onClick={startGame}
+        onClick={handleStartGame}
       >
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
           Sand Tetris
@@ -346,7 +357,7 @@ export function SandTetrisGame() {
 
   // 게임 플레이 화면
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div ref={gameContainerRef} className="flex flex-col items-center gap-4 w-full">
       {/* 점수 */}
       <div className="w-full max-w-xs">
         <div className="text-center">
