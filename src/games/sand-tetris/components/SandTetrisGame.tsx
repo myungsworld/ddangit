@@ -286,6 +286,8 @@ export function SandTetrisGame() {
       <GameResult
         title="Game Over"
         score={formatScore(score)}
+        scoreValue={score}
+        gameId={GAME_CONFIG.id}
         subtitle="pixels cleared"
         color={GAME_CONFIG.color}
         onRetry={reset}

@@ -74,6 +74,8 @@ export function ReactionGame() {
       <GameResult
         title="Average"
         score={`${averageTime}ms`}
+        scoreValue={averageTime}
+        gameId={GAME_CONFIG.id}
         subtitle={`${rating.emoji} ${rating.label}`}
         color={GAME_CONFIG.color}
         onRetry={reset}

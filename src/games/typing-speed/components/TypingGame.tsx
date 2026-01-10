@@ -33,6 +33,8 @@ export function TypingGame() {
       <GameResult
         title="WPM"
         score={String(wpm)}
+        scoreValue={wpm}
+        gameId={GAME_CONFIG.id}
         subtitle={`${accuracy}% accuracy`}
         color={GAME_CONFIG.color}
         onRetry={reset}

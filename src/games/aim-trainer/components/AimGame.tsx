@@ -55,6 +55,8 @@ export function AimGame() {
       <GameResult
         title="Average"
         score={`${averageTime}ms`}
+        scoreValue={averageTime}
+        gameId={GAME_CONFIG.id}
         subtitle={`${accuracy}% accuracy`}
         color={GAME_CONFIG.color}
         onRetry={reset}

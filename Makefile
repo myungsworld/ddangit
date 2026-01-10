@@ -1,7 +1,15 @@
-.PHONY: dev build prod down clean logs deploy deploy-preview
+.PHONY: dev build prod down clean logs deploy deploy-preview fresh
 
 # Docker
 dev:
+	@rm -rf .next
+	docker compose up dev
+
+# 캐시 완전 정리 후 새로 빌드
+fresh:
+	@rm -rf .next
+	docker compose down -v
+	docker compose build --no-cache dev
 	docker compose up dev
 
 build:

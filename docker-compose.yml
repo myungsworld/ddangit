@@ -5,6 +5,8 @@ services:
       target: dev
     ports:
       - "3000:3000"
+    environment:
+      - STORAGE_TYPE=memory
     volumes:
       - .:/app
       - /app/node_modules

@@ -53,6 +53,8 @@ export function MemoryGame() {
       <GameResult
         title="Level"
         score={String(highestLevel)}
+        scoreValue={highestLevel}
+        gameId={GAME_CONFIG.id}
         color={GAME_CONFIG.color}
         onRetry={reset}
         onShare={() => {
