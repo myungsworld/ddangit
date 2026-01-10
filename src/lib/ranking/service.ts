@@ -103,7 +103,13 @@ export async function submitScore(
   }
 
   // 저장
-  await storage.setRanking(gameId, date, top3);
+  try {
+    await storage.setRanking(gameId, date, top3);
+    console.log('[Ranking] Saved:', { gameId, date, top3 });
+  } catch (err) {
+    console.error('[Ranking] Failed to save:', err);
+    throw err;
+  }
 
   return {
     success: true,

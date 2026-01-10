@@ -39,17 +39,29 @@ export function useRanking(): UseRankingReturn {
     setError(null);
 
     try {
-      const res = await fetch('/api/ranking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gameId, score, action: 'check' }),
-      });
+      // 랭킹 체크와 현재 랭킹 조회를 동시에
+      const [checkRes, rankingRes] = await Promise.all([
+        fetch('/api/ranking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gameId, score, action: 'check' }),
+        }),
+        fetch(`/api/ranking?gameId=${gameId}`),
+      ]);
 
-      if (!res.ok) throw new Error('Failed to check rank');
+      if (!checkRes.ok) throw new Error('Failed to check rank');
 
-      const result: RankCheckResult = await res.json();
+      const result: RankCheckResult = await checkRes.json();
       setRankResult(result);
-      setTodayRanking(result.currentTop3);
+
+      // 현재 랭킹 설정 (GET 응답 우선, 없으면 check 결과 사용)
+      if (rankingRes.ok) {
+        const { ranking } = await rankingRes.json();
+        setTodayRanking(ranking);
+      } else {
+        setTodayRanking(result.currentTop3);
+      }
+
       return result;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -90,6 +102,7 @@ export function useRanking(): UseRankingReturn {
 
   // 오늘 랭킹 조회
   const fetchRanking = useCallback(async (gameId: string): Promise<void> => {
+    setIsChecking(true);
     try {
       const res = await fetch(`/api/ranking?gameId=${gameId}`);
       if (!res.ok) throw new Error('Failed to fetch ranking');
@@ -98,6 +111,8 @@ export function useRanking(): UseRankingReturn {
       setTodayRanking(ranking);
     } catch (err) {
       console.error('Failed to fetch ranking:', err);
+    } finally {
+      setIsChecking(false);
     }
   }, []);
 

@@ -30,7 +30,7 @@ logs:
 # Vercel Deploy
 deploy:
 	@if [ -f .env.local ]; then \
-		export $$(cat .env.local | xargs) && \
+		export $$(grep -v '^#' .env.local | grep -v '^$$' | xargs) && \
 		vercel --prod --token $$VERCEL_TOKEN --yes; \
 	else \
 		echo "Error: .env.local not found. Create it with VERCEL_TOKEN=your_token"; \
@@ -38,7 +38,7 @@ deploy:
 
 deploy-preview:
 	@if [ -f .env.local ]; then \
-		export $$(cat .env.local | xargs) && \
+		export $$(grep -v '^#' .env.local | grep -v '^$$' | xargs) && \
 		vercel --token $$VERCEL_TOKEN --yes; \
 	else \
 		echo "Error: .env.local not found. Create it with VERCEL_TOKEN=your_token"; \

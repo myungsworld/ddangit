@@ -37,18 +37,23 @@ export function GameResult({
     todayRanking,
     checkRank,
     submitScore,
+    fetchRanking,
     reset: resetRanking,
   } = useRanking();
 
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [submittedRank, setSubmittedRank] = useState<number | null>(null);
 
-  // 결과 표시 시 랭킹 체크
+  // 결과 표시 시 랭킹 체크 (0점 이상이면 랭킹 체크, 아니면 랭킹만 조회)
   useEffect(() => {
-    if (gameId && scoreValue > 0) {
-      checkRank(gameId, scoreValue);
+    if (gameId) {
+      if (scoreValue > 0) {
+        checkRank(gameId, scoreValue);
+      } else {
+        fetchRanking(gameId);
+      }
     }
-  }, [gameId, scoreValue, checkRank]);
+  }, [gameId, scoreValue, checkRank, fetchRanking]);
 
   const handleRetry = () => {
     resetRanking();
