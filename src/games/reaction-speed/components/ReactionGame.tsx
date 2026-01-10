@@ -43,7 +43,7 @@ export function ReactionGame() {
       case 'ready':
         return {
           main: 'Wait...',
-          sub: 'Tap when green',
+          sub: `${currentAttempt} / ${totalAttempts}`,
         };
       case 'go':
         return {

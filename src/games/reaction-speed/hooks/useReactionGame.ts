@@ -64,14 +64,27 @@ export function useReactionGame() {
           attempts: newAttempts,
         }));
       } else {
-        // 다음 시도
+        // 다음 시도 - 바로 ready 상태로 (waiting 스킵)
         setData((prev) => ({
           ...prev,
-          phase: 'waiting',
+          phase: 'ready',
           reactionTime,
           attempts: newAttempts,
           startTime: null,
         }));
+
+        // 랜덤 딜레이 후 'go' 상태로 변경
+        const delay =
+          Math.random() * (GAME_CONFIG.maxDelay - GAME_CONFIG.minDelay) +
+          GAME_CONFIG.minDelay;
+
+        timeoutRef.current = setTimeout(() => {
+          setData((prev) => ({
+            ...prev,
+            phase: 'go',
+            startTime: Date.now(),
+          }));
+        }, delay);
       }
       return;
     }

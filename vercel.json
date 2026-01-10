@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/promo/twitter",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}

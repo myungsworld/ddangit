@@ -6,6 +6,8 @@ export interface Target {
   id: number;
   x: number;  // 퍼센트 (0-100)
   y: number;  // 퍼센트 (0-100)
+  vx: number; // x 속도 (퍼센트/프레임)
+  vy: number; // y 속도 (퍼센트/프레임)
 }
 
 export interface AimGameData {

@@ -9,6 +9,10 @@
 ```
 src/
 ├── app/                      # Next.js App Router
+│   ├── api/
+│   │   └── promo/            # 홍보 자동화 API
+│   │       ├── route.ts      # 전체 플랫폼 통합
+│   │       └── twitter/      # Twitter API
 │   ├── games/
 │   │   ├── reaction-speed/
 │   │   ├── aim-trainer/
@@ -26,6 +30,12 @@ src/
 │       ├── types/            # 타입 정의
 │       ├── constants/        # 설정값
 │       └── utils/            # 유틸리티 (sand-tetris: 물리 엔진)
+│
+├── lib/                      # 라이브러리 모듈
+│   └── promo/                # 홍보 자동화
+│       ├── twitter.ts        # Twitter API (OAuth 1.0a)
+│       ├── logger.ts         # 로그 유틸리티
+│       └── types.ts          # 타입 정의
 │
 └── shared/                   # 공용 모듈
     ├── components/
@@ -108,23 +118,65 @@ make deploy-preview  # 프리뷰 배포
 
 ---
 
+## Promo System (홍보 자동화)
+
+### API Endpoints
+
+```
+GET  /api/promo              # 전체 상태 확인
+POST /api/promo              # 모든 플랫폼에 발송
+GET  /api/promo/twitter      # Twitter 상태 (Cron 트리거)
+POST /api/promo/twitter      # Twitter 수동 발송
+```
+
+### Usage
+
+```bash
+# 상태 확인
+curl https://ddangit.vercel.app/api/promo
+
+# Twitter 수동 발송
+curl -X POST https://ddangit.vercel.app/api/promo/twitter \
+  -H "Content-Type: application/json" \
+  -d '{"type": "general"}'
+
+# 커스텀 메시지
+curl -X POST https://ddangit.vercel.app/api/promo/twitter \
+  -H "Content-Type: application/json" \
+  -d '{"customMessage": "Check out ddangit! https://ddangit.vercel.app"}'
+```
+
+### Vercel Cron
+
+매일 09:00 UTC (한국시간 18:00)에 자동 트윗 (`vercel.json`)
+
+### 환경변수 (Vercel)
+
+```
+TWITTER_API_KEY=xxx
+TWITTER_API_SECRET=xxx
+TWITTER_ACCESS_TOKEN=xxx
+TWITTER_ACCESS_SECRET=xxx
+```
+
+### 로그 확인
+
+Vercel Dashboard → Logs → `[Promo]` 검색
+
+### 플랫폼 추가 방법
+
+1. `src/lib/promo/[platform].ts` 생성
+2. `src/app/api/promo/[platform]/route.ts` 생성
+3. `vercel.json`에 cron 추가
+
+---
+
 ## TODO (다음에 할 일)
 
-### 1. 홍보 자동화 시스템
-무료 홍보를 위한 자동 포스팅 스케줄러 구축
-
-**대상 플랫폼:**
-- Reddit (r/WebGames, r/indiegames 등)
-- Twitter/X API
-- Product Hunt
-- Hacker News
-- 디시인사이드, 클리앙 등 국내 커뮤니티
-
-**구현 방향:**
-- Vercel Cron Jobs 또는 GitHub Actions로 스케줄링
-- 각 플랫폼 API 연동
-- 게임별 홍보 문구 템플릿
-- 포스팅 로그 관리
+### 1. 홍보 자동화 확장
+- [ ] 메시지 템플릿 다양화 (중복 방지)
+- [ ] Discord Webhook 추가
+- [ ] Reddit API 연동 (정책 확인 필요)
 
 ### 2. AdSense 승인 후
 - [ ] 실제 광고 코드 AdSlot에 적용
@@ -186,15 +238,37 @@ make deploy-preview  # 프리뷰 배포
 
 ## Development Log
 
+### 2025-01-10 (2)
+- **홍보 자동화 시스템 구축**
+  - Twitter API v2 연동 (OAuth 1.0a)
+  - `/api/promo/twitter` 엔드포인트 생성
+  - Vercel Cron 설정 (매일 09:00 UTC)
+  - 플랫폼별 확장 가능한 구조 설계
+  - 상세 로그 시스템 (`[Promo][TWITTER] ✅ SUCCESS`)
+
 ### 2025-01-10
-- Sand Tetris 대규모 업데이트
+- **Reaction Speed 업데이트**
+  - 5회 연속 진행 (중간에 "Tap to start" 없이 바로 다음 시도)
+  - 더 빠르고 몰입감 있는 게임 플로우
+
+- **Aim Trainer 업데이트**
+  - 정적 타겟 → 움직이는 타겟으로 변경 (더 재미있게!)
+  - 타겟이 벽에 튕기며 랜덤 방향으로 이동
+  - 클릭 좌표 기반 히트 판정 (움직이는 타겟도 정확하게 판정)
+  - 타겟에 glow 효과 추가
+
+- **공통 GameResult 컴포넌트**
+  - 모든 게임 결과 화면 통합
+  - "Try other games" 링크 추가
+  - children prop으로 게임별 추가 정보 표시
+
+- **Sand Tetris 대규모 업데이트**
   - 새 메카닉: 같은 색을 왼쪽 벽에서 오른쪽 벽까지 연결하면 삭제
   - 클리어 애니메이션 (깜빡임 효과)
   - 4가지 색상으로 정리
   - 블록이 상단에서 시작, 위험 구역에 모래가 차면 게임오버
   - 모바일 터치 버그 수정 (더블 드롭 방지)
   - 게임 시작 시 자동 스크롤 (모바일 UX)
-  - 게임오버 시 다른 게임으로 이동 버튼 추가
 
 ### 2025-01-09
 - 프로젝트 초기 설정 (Next.js + TypeScript + Tailwind)

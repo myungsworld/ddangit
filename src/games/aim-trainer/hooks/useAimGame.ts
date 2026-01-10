@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { AimGameData, Target } from '../types';
 import { GAME_CONFIG } from '../constants';
 
@@ -13,6 +13,13 @@ const initialData: AimGameData = {
   hitTimes: [],
 };
 
+// 랜덤 속도 생성
+function randomSpeed(): number {
+  const { minSpeed, maxSpeed } = GAME_CONFIG;
+  const speed = minSpeed + Math.random() * (maxSpeed - minSpeed);
+  return Math.random() > 0.5 ? speed : -speed;
+}
+
 // 랜덤 타겟 위치 생성
 function generateTarget(id: number): Target {
   const padding = GAME_CONFIG.padding;
@@ -20,12 +27,58 @@ function generateTarget(id: number): Target {
     id,
     x: padding + Math.random() * (100 - padding * 2),
     y: padding + Math.random() * (100 - padding * 2),
+    vx: randomSpeed(),
+    vy: randomSpeed(),
   };
 }
 
 export function useAimGame() {
   const [data, setData] = useState<AimGameData>(initialData);
   const [targetSpawnTime, setTargetSpawnTime] = useState<number>(0);
+  const animationRef = useRef<number>(0);
+
+  // 타겟 이동 애니메이션
+  useEffect(() => {
+    if (data.phase !== 'playing' || !data.target) {
+      return;
+    }
+
+    const animate = () => {
+      setData((prev) => {
+        if (!prev.target || prev.phase !== 'playing') return prev;
+
+        const padding = GAME_CONFIG.padding;
+        let { x, y, vx, vy } = prev.target;
+
+        // 위치 업데이트
+        x += vx;
+        y += vy;
+
+        // 벽에 부딪히면 반사
+        if (x < padding || x > 100 - padding) {
+          vx = -vx;
+          x = Math.max(padding, Math.min(100 - padding, x));
+        }
+        if (y < padding || y > 100 - padding) {
+          vy = -vy;
+          y = Math.max(padding, Math.min(100 - padding, y));
+        }
+
+        return {
+          ...prev,
+          target: { ...prev.target, x, y, vx, vy },
+        };
+      });
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationRef.current);
+    };
+  }, [data.phase, data.target?.id]);
 
   // 게임 시작
   const startGame = useCallback(() => {
@@ -83,6 +136,7 @@ export function useAimGame() {
 
   // 리셋
   const reset = useCallback(() => {
+    cancelAnimationFrame(animationRef.current);
     setData(initialData);
   }, []);
 
