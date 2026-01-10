@@ -271,6 +271,15 @@ export function SandTetrisGame() {
   // 점수 포맷팅
   const formatScore = (n: number) => n.toLocaleString();
 
+  // 게임 시작 + 스크롤
+  const handleStartGame = useCallback(() => {
+    startGame();
+    // 게임 시작 후 게임 영역으로 스크롤
+    setTimeout(() => {
+      gameContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, [startGame]);
+
   // 게임 오버 화면
   if (phase === 'gameover') {
     return (
@@ -319,15 +328,6 @@ export function SandTetrisGame() {
       </div>
     );
   }
-
-  // 게임 시작 + 스크롤
-  const handleStartGame = useCallback(() => {
-    startGame();
-    // 게임 시작 후 게임 영역으로 스크롤
-    setTimeout(() => {
-      gameContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-  }, [startGame]);
 
   // 시작 화면
   if (phase === 'idle') {
