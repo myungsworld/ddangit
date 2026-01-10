@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { useSandTetris } from '../hooks/useSandTetris';
 import { GAME_CONFIG, BLOCK_COLORS } from '../constants';
 
@@ -285,27 +286,35 @@ export function SandTetrisGame() {
           <p className="text-gray-400">pixels cleared</p>
         </div>
 
-        <div className="flex gap-4 justify-center">
-          <button
-            onClick={reset}
-            className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-100 transition-all active:scale-95"
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={reset}
+              className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-100 transition-all active:scale-95"
+            >
+              Play Again
+            </button>
+            <button
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: 'Sand Tetris',
+                    text: `I cleared ${formatScore(score)} pixels!`,
+                    url: window.location.href,
+                  });
+                }
+              }}
+              className="px-8 py-4 bg-gray-800 text-white font-bold rounded-xl hover:bg-gray-700 transition-all active:scale-95 border border-gray-700"
+            >
+              Share
+            </button>
+          </div>
+          <Link
+            href="/"
+            className="text-gray-500 hover:text-gray-300 transition-colors text-sm"
           >
-            Play Again
-          </button>
-          <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: 'Sand Tetris',
-                  text: `I cleared ${formatScore(score)} pixels!`,
-                  url: window.location.href,
-                });
-              }
-            }}
-            className="px-8 py-4 bg-gray-800 text-white font-bold rounded-xl hover:bg-gray-700 transition-all active:scale-95 border border-gray-700"
-          >
-            Share
-          </button>
+            ← Try other games
+          </Link>
         </div>
       </div>
     );
