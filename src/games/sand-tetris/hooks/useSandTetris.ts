@@ -46,6 +46,7 @@ export function useSandTetris() {
   const gameLoopRef = useRef<number | null>(null);
   const stateRef = useRef<GameState>(state);
   const skipNextDropRef = useRef(false);  // hardDrop 직후 자동 드롭 스킵
+  const lastHardDropTimeRef = useRef(0);  // 마지막 hardDrop 시간 (연속 호출 방지)
 
   stateRef.current = state;
 
@@ -256,8 +257,12 @@ export function useSandTetris() {
     });
   }, []);
 
-  // 하드 드롭
+  // 하드 드롭 (연속 호출 방지: 300ms 쓰로틀)
   const hardDrop = useCallback(() => {
+    const now = performance.now();
+    if (now - lastHardDropTimeRef.current < 300) return;  // 300ms 내 재호출 무시
+    lastHardDropTimeRef.current = now;
+
     setState((prev) => {
       if (prev.phase !== 'playing' || !prev.currentBlock) return prev;
 
