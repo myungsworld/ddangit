@@ -11,6 +11,15 @@ export const GAMES: GameMeta[] = [
     estimatedTime: '3m',
   },
   {
+    id: 'block-blast',
+    name: 'Block Blast',
+    description: 'Clear rows and columns',
+    icon: '🧩',
+    path: '/games/block-blast',
+    color: '#8B5CF6',
+    estimatedTime: '3m',
+  },
+  {
     id: 'reaction-speed',
     name: 'Reaction',
     description: 'Test your reflexes',

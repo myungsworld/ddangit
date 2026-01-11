@@ -32,4 +32,5 @@ export const GAME_SCORE_ORDER: Record<string, ScoreOrder> = {
   'reaction-speed': 'asc',   // 낮을수록 좋음 (ms)
   'aim-trainer': 'asc',      // 낮을수록 좋음 (ms)
   'sand-tetris': 'desc',     // 높을수록 좋음 (점수)
+  'block-blast': 'desc',     // 높을수록 좋음 (점수)
 };

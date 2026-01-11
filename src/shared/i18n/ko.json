@@ -1,5 +1,6 @@
 {
   "common": {
+    "start": "시작하기",
     "tapToStart": "Tap to start",
     "gameOver": "게임 오버",
     "retry": "다시하기",
@@ -81,6 +82,20 @@
         "average": "흙수저",
         "slow": "반지하",
         "verySlow": "콩가루 집안"
+      }
+    },
+    "block-blast": {
+      "name": "블록 블라스트",
+      "description": "블록을 배치해서 가로줄이나 세로줄을 완성하세요",
+      "combo": "콤보",
+      "ranks": {
+        "godlike": "테트리스 신",
+        "insane": "블록 마스터",
+        "fast": "칸 채우기 장인",
+        "good": "꽤 잘 채우네",
+        "average": "연습하면 늘어",
+        "slow": "눈치가 없어",
+        "verySlow": "블록 공포증"
       }
     }
   }

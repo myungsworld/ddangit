@@ -1,5 +1,6 @@
 {
   "common": {
+    "start": "Start",
     "tapToStart": "Tap to start",
     "gameOver": "Game Over",
     "retry": "Retry",
@@ -81,6 +82,20 @@
         "average": "Still Warming Up",
         "slow": "Take Your Time",
         "verySlow": "First Timer"
+      }
+    },
+    "block-blast": {
+      "name": "Block Blast",
+      "description": "Place blocks to complete rows and columns",
+      "combo": "Combo",
+      "ranks": {
+        "godlike": "Block Legend",
+        "insane": "Grid Master",
+        "fast": "Pattern Pro",
+        "good": "Nice Strategy",
+        "average": "Getting There",
+        "slow": "Keep Trying",
+        "verySlow": "Just Started"
       }
     }
   }
