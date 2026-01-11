@@ -224,16 +224,14 @@ export function useSandTetris() {
       let newX = block.x;
 
       if (targetX < blockCenterX - step / 2) {
-        if (
-          canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, -step)
-        ) {
-          newX = block.x - step;
+        const result = canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, -step);
+        if (result.canMove) {
+          newX = block.x + result.actualDx;
         }
       } else if (targetX > blockCenterX + step / 2) {
-        if (
-          canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, step)
-        ) {
-          newX = block.x + step;
+        const result = canMove(prev.grid, block.shape, block.x, block.y, BLOCK_SIZE, step);
+        if (result.canMove) {
+          newX = block.x + result.actualDx;
         }
       }
 

@@ -208,13 +208,13 @@ export function SandTetrisGame() {
         case 'ArrowLeft':
           e.preventDefault();
           if (currentBlock) {
-            moveBlockTo(currentBlock.x - BLOCK_SIZE);
+            moveBlockTo(0); // 블록 중심보다 왼쪽으로 이동 요청
           }
           break;
         case 'ArrowRight':
           e.preventDefault();
           if (currentBlock) {
-            moveBlockTo(currentBlock.x + GRID_WIDTH);
+            moveBlockTo(GRID_WIDTH); // 블록 중심보다 오른쪽으로 이동 요청
           }
           break;
         case 'ArrowUp':

@@ -217,7 +217,7 @@ export function checkCollision(
   return false;
 }
 
-// 좌우 이동 가능 체크
+// 좌우 이동 가능 체크 - 벽까지 갈 수 있도록 실제 이동 거리 계산
 export function canMove(
   grid: Cell[][],
   shape: number[][],
@@ -225,17 +225,53 @@ export function canMove(
   blockY: number,
   blockSize: number,
   dx: number
-): boolean {
-  const newX = blockX + dx;
+): { canMove: boolean; actualDx: number } {
+  // 블록의 실제 차지 범위 계산
+  let minShapeX = shape[0].length;
+  let maxShapeX = 0;
+  for (let sy = 0; sy < shape.length; sy++) {
+    for (let sx = 0; sx < shape[sy].length; sx++) {
+      if (shape[sy][sx] !== 0) {
+        minShapeX = Math.min(minShapeX, sx);
+        maxShapeX = Math.max(maxShapeX, sx);
+      }
+    }
+  }
 
+  // 블록이 실제로 차지하는 픽셀 범위
+  const blockLeftEdge = blockX + minShapeX * blockSize;
+  const blockRightEdge = blockX + (maxShapeX + 1) * blockSize - 1;
+
+  let actualDx = dx;
+
+  // 이동 후 범위 체크 및 조정
+  if (dx < 0) {
+    // 왼쪽 이동
+    const newLeft = blockLeftEdge + dx;
+    if (newLeft < 0) {
+      actualDx = -blockLeftEdge; // 벽까지만 이동
+    }
+  } else {
+    // 오른쪽 이동
+    const newRight = blockRightEdge + dx;
+    if (newRight >= GRID_WIDTH) {
+      actualDx = GRID_WIDTH - 1 - blockRightEdge; // 벽까지만 이동
+    }
+  }
+
+  if (actualDx === 0) {
+    return { canMove: false, actualDx: 0 };
+  }
+
+  const newX = blockX + actualDx;
+
+  // 모래와 충돌 체크
   for (let sy = 0; sy < shape.length; sy++) {
     for (let sx = 0; sx < shape[sy].length; sx++) {
       if (shape[sy][sx] === 0) continue;
 
       const pixelX = newX + sx * blockSize;
       const pixelY = blockY + sy * blockSize;
-
-      if (pixelX < 0 || pixelX + blockSize > GRID_WIDTH) return false;
 
       for (let py = 0; py < blockSize; py++) {
         for (let px = 0; px < blockSize; px++) {
@@ -247,14 +283,14 @@ export function canMove(
             checkX >= 0 && checkX < GRID_WIDTH &&
             grid[checkY][checkX] !== 0
           ) {
-            return false;
+            return { canMove: false, actualDx: 0 };
           }
         }
       }
     }
   }
 
-  return true;
+  return { canMove: true, actualDx };
 }
 
 // 게임 오버 체크
