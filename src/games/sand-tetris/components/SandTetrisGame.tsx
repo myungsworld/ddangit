@@ -361,7 +361,7 @@ export function SandTetrisGame() {
 
   // 게임 플레이 화면
   return (
-    <div ref={gameContainerRef} className="flex flex-col items-center gap-4 w-full">
+    <div className="flex flex-col items-center gap-4 w-full">
       {/* 점수 */}
       <div className="w-full max-w-xs">
         <div className="text-center">
