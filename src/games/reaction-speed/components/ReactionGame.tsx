@@ -1,10 +1,23 @@
 'use client';
 
 import { useReactionGame } from '../hooks/useReactionGame';
-import { GAME_CONFIG, getRating } from '../constants';
+import { GAME_CONFIG } from '../constants';
 import { GameResult } from '@/shared/components/game';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+
+// 반응 시간에 따른 등급 결정
+function getRankKey(time: number): string {
+  if (time < 150) return 'godlike';
+  if (time < 200) return 'insane';
+  if (time < 250) return 'fast';
+  if (time < 300) return 'good';
+  if (time < 400) return 'average';
+  if (time < 500) return 'slow';
+  return 'verySlow';
+}
 
 export function ReactionGame() {
+  const { t } = useLanguage();
   const {
     phase,
     reactionTime,
@@ -37,29 +50,29 @@ export function ReactionGame() {
     switch (phase) {
       case 'waiting':
         return {
-          main: 'Tap to start',
+          main: t('common.tapToStart'),
           sub: `${currentAttempt} / ${totalAttempts}`,
         };
       case 'ready':
         return {
-          main: 'Wait...',
+          main: t('games.reaction-speed.wait'),
           sub: `${currentAttempt} / ${totalAttempts}`,
         };
       case 'go':
         return {
-          main: 'NOW!',
-          sub: 'Tap!',
+          main: t('games.reaction-speed.clickNow'),
+          sub: '',
         };
       case 'early':
         return {
-          main: 'Too early!',
-          sub: 'Tap to retry',
+          main: t('games.reaction-speed.tooEarly'),
+          sub: t('common.tapToStart'),
         };
       case 'result':
-        const rating = getRating(averageTime);
+        const rankKey = getRankKey(averageTime);
         return {
           main: `${averageTime}ms`,
-          sub: `${rating.emoji} ${rating.label}`,
+          sub: t(`games.reaction-speed.ranks.${rankKey}`),
         };
       default:
         return { main: '', sub: '' };
@@ -69,21 +82,22 @@ export function ReactionGame() {
   const message = getMessage();
 
   if (phase === 'result') {
-    const rating = getRating(averageTime);
+    const rankKey = getRankKey(averageTime);
+    const rankLabel = t(`games.reaction-speed.ranks.${rankKey}`);
     return (
       <GameResult
-        title="Average"
+        title={t('common.score')}
         score={`${averageTime}ms`}
         scoreValue={averageTime}
         gameId={GAME_CONFIG.id}
-        subtitle={`${rating.emoji} ${rating.label}`}
+        subtitle={rankLabel}
         color={GAME_CONFIG.color}
         onRetry={reset}
         onShare={() => {
           if (navigator.share) {
             navigator.share({
-              title: 'Reaction Test',
-              text: `My avg: ${averageTime}ms! Try it!`,
+              title: t('games.reaction-speed.name'),
+              text: `${averageTime}ms - ${rankLabel}`,
               url: window.location.href,
             });
           }

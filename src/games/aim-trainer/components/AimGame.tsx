@@ -4,8 +4,21 @@ import { useRef } from 'react';
 import { useAimGame } from '../hooks/useAimGame';
 import { GAME_CONFIG } from '../constants';
 import { GameResult } from '@/shared/components/game';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
+
+// 평균 시간에 따른 등급 결정
+function getRankKey(time: number): string {
+  if (time < 300) return 'godlike';
+  if (time < 400) return 'insane';
+  if (time < 500) return 'fast';
+  if (time < 600) return 'good';
+  if (time < 800) return 'average';
+  if (time < 1000) return 'slow';
+  return 'verySlow';
+}
 
 export function AimGame() {
+  const { t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const {
     phase,
@@ -51,20 +64,22 @@ export function AimGame() {
 
   // 결과 화면
   if (phase === 'result') {
+    const rankKey = getRankKey(averageTime);
+    const rankLabel = t(`games.aim-trainer.ranks.${rankKey}`);
     return (
       <GameResult
-        title="Average"
+        title={t('games.aim-trainer.avgTime')}
         score={`${averageTime}ms`}
         scoreValue={averageTime}
         gameId={GAME_CONFIG.id}
-        subtitle={`${accuracy}% accuracy`}
+        subtitle={rankLabel}
         color={GAME_CONFIG.color}
         onRetry={reset}
         onShare={() => {
           if (navigator.share) {
             navigator.share({
-              title: 'Aim Trainer',
-              text: `Avg: ${averageTime}ms, ${accuracy}% accuracy!`,
+              title: t('games.aim-trainer.name'),
+              text: `${averageTime}ms - ${rankLabel}`,
               url: window.location.href,
             });
           }
@@ -72,12 +87,16 @@ export function AimGame() {
       >
         <div className="space-y-2 text-sm text-gray-400">
           <div className="flex justify-between">
-            <span>Hits</span>
+            <span>{t('games.aim-trainer.targetsHit')}</span>
             <span className="text-green-500">{hits}</span>
           </div>
           <div className="flex justify-between">
-            <span>Misses</span>
+            <span>{t('games.aim-trainer.miss')}</span>
             <span className="text-red-500">{misses}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>{t('games.aim-trainer.accuracy')}</span>
+            <span>{accuracy}%</span>
           </div>
         </div>
       </GameResult>
@@ -92,9 +111,9 @@ export function AimGame() {
         onClick={startGame}
       >
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-          Tap to start
+          {t('common.tapToStart')}
         </h1>
-        <p className="text-xl text-gray-400">Hit {totalTargets} targets</p>
+        <p className="text-xl text-gray-400">{t('games.aim-trainer.description')}</p>
       </div>
     );
   }

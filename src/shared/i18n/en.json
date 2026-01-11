@@ -1,0 +1,87 @@
+{
+  "common": {
+    "tapToStart": "Tap to start",
+    "gameOver": "Game Over",
+    "retry": "Retry",
+    "share": "Share",
+    "score": "Score",
+    "ranking": "Today's Ranking",
+    "noRanking": "No rankings yet. Be the first!",
+    "todayTop3": "Today's Top 3",
+    "enterNickname": "Enter nickname",
+    "submit": "Submit",
+    "back": "← Back",
+    "skip": "Skip",
+    "save": "Save",
+    "saving": "Saving...",
+    "characters": "characters",
+    "rankMessages": {
+      "1": "Leave your mark as #1!",
+      "2": "Silver is still a win!",
+      "3": "Bronze ain't bad!"
+    }
+  },
+  "home": {
+    "logo": "ddangit",
+    "subtitle": "quick games",
+    "privacy": "Privacy Policy"
+  },
+  "games": {
+    "reaction-speed": {
+      "name": "Reaction Speed",
+      "description": "Tap when it turns green!",
+      "wait": "Wait...",
+      "clickNow": "Tap NOW!",
+      "tooEarly": "Too early!",
+      "result": "ms",
+      "ranks": {
+        "godlike": "Built Different",
+        "insane": "Human Radar",
+        "fast": "Lightning Reflexes",
+        "good": "Pretty Quick",
+        "average": "Average Joe",
+        "slow": "Sleepy Turtle",
+        "verySlow": "Are You Napping?"
+      }
+    },
+    "aim-trainer": {
+      "name": "Aim Trainer",
+      "description": "Hit the moving targets",
+      "hit": "Hit!",
+      "miss": "Miss",
+      "accuracy": "Accuracy",
+      "avgTime": "Avg Time",
+      "targetsHit": "Targets Hit",
+      "ranks": {
+        "godlike": "Aimbot IRL",
+        "insane": "Sniper Instinct",
+        "fast": "Hawk Eye",
+        "good": "Decent Shot",
+        "average": "Keep Practicing",
+        "slow": "Where's Target?",
+        "verySlow": "Eyes Closed?"
+      }
+    },
+    "sand-tetris": {
+      "name": "Sand Tetris",
+      "description": "Connect same colors left to right!",
+      "controls": {
+        "rotate": "Rotate",
+        "move": "Move",
+        "drop": "Drop"
+      },
+      "levelUp": "Uh oh, it's getting harder!",
+      "newColor": "New Color",
+      "pixelsCleared": "pixels cleared",
+      "ranks": {
+        "godlike": "Sand Master",
+        "insane": "Connection Pro",
+        "fast": "Block Artist",
+        "good": "Nice Vibes",
+        "average": "Still Warming Up",
+        "slow": "Take Your Time",
+        "verySlow": "First Timer"
+      }
+    }
+  }
+}

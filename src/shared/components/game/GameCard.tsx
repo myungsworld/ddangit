@@ -2,12 +2,18 @@
 
 import Link from 'next/link';
 import { GameMeta } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface GameCardProps {
   game: GameMeta;
 }
 
 export function GameCard({ game }: GameCardProps) {
+  const { t } = useLanguage();
+
+  const name = t(`games.${game.id}.name`) || game.name;
+  const description = t(`games.${game.id}.description`) || game.description;
+
   return (
     <Link href={game.path}>
       <div
@@ -17,8 +23,8 @@ export function GameCard({ game }: GameCardProps) {
         <div className="flex items-center gap-4">
           <span className="text-4xl">{game.icon}</span>
           <div className="flex-1">
-            <h3 className="text-lg font-bold text-white">{game.name}</h3>
-            <p className="text-sm text-gray-400">{game.description}</p>
+            <h3 className="text-lg font-bold text-white">{name}</h3>
+            <p className="text-sm text-gray-400 whitespace-pre-line">{description}</p>
           </div>
           <span className="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded-full">
             {game.estimatedTime}

@@ -3,14 +3,18 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { AdSlot } from '../ad';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 interface GameLayoutProps {
   children: ReactNode;
-  title: string;
+  gameId: string;
   color: string;
 }
 
-export function GameLayout({ children, title, color }: GameLayoutProps) {
+export function GameLayout({ children, gameId, color }: GameLayoutProps) {
+  const { t } = useLanguage();
+  const title = t(`games.${gameId}.name`);
+
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col">
       {/* Top Ad */}

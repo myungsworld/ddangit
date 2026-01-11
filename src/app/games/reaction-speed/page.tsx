@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ReactionSpeedPage() {
   return (
-    <GameLayout title={GAME_CONFIG.name} color={GAME_CONFIG.color}>
+    <GameLayout gameId={GAME_CONFIG.id} color={GAME_CONFIG.color}>
       <div className="w-full max-w-lg mx-auto">
         <ReactionGame />
       </div>

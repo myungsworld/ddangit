@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import { GAMES } from '@/shared/constants';
 import { GameCard } from '@/shared/components/game';
 import { AdSlot } from '@/shared/components/ad';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 export default function Home() {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col">
       {/* 상단 광고 */}
@@ -11,8 +16,8 @@ export default function Home() {
 
       {/* 헤더 */}
       <header className="p-6 text-center">
-        <h1 className="text-4xl font-bold text-white mb-1">ddangit</h1>
-        <p className="text-gray-500 text-sm">quick games</p>
+        <h1 className="text-4xl font-bold text-white mb-1">{t('home.logo')}</h1>
+        <p className="text-gray-500 text-sm">{t('home.subtitle')}</p>
       </header>
 
       {/* 게임 목록 */}
@@ -35,7 +40,7 @@ export default function Home() {
       {/* 푸터 */}
       <footer className="text-center py-4 text-gray-600 text-xs">
         <Link href="/privacy" className="hover:text-gray-400 transition-colors">
-          Privacy Policy
+          {t('home.privacy')}
         </Link>
       </footer>
 

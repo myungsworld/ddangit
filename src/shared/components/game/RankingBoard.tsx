@@ -1,6 +1,7 @@
 'use client';
 
 import { RankEntry } from '@/lib/ranking/types';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 interface RankingBoardProps {
   ranking: RankEntry[];
@@ -11,10 +12,12 @@ interface RankingBoardProps {
 const MEDALS = ['🥇', '🥈', '🥉'];
 
 export function RankingBoard({ ranking, highlightRank, color }: RankingBoardProps) {
+  const { t } = useLanguage();
+
   if (ranking.length === 0) {
     return (
       <div className="text-center py-4 text-gray-500">
-        No rankings yet today. Be the first!
+        {t('common.noRanking')}
       </div>
     );
   }
@@ -22,7 +25,7 @@ export function RankingBoard({ ranking, highlightRank, color }: RankingBoardProp
   return (
     <div className="w-full max-w-xs mx-auto">
       <h3 className="text-sm text-gray-500 uppercase tracking-widest mb-3 text-center">
-        Today&apos;s Top 3
+        {t('common.todayTop3')}
       </h3>
       <div className="space-y-2">
         {ranking.map((entry) => (

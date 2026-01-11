@@ -1,0 +1,87 @@
+{
+  "common": {
+    "tapToStart": "Tap to start",
+    "gameOver": "게임 오버",
+    "retry": "다시하기",
+    "share": "공유하기",
+    "score": "점수",
+    "ranking": "오늘의 랭킹",
+    "noRanking": "아직 기록이 없습니다",
+    "todayTop3": "오늘의 TOP 3",
+    "enterNickname": "닉네임 입력",
+    "submit": "등록",
+    "back": "다른게임 하러가기",
+    "skip": "건너뛰기",
+    "save": "저장",
+    "saving": "저장 중...",
+    "characters": "자",
+    "rankMessages": {
+      "1": "1등은 인정이지 흔적을 남기도록",
+      "2": "2등도 잘한거야",
+      "3": "간신히 턱걸이 성공했네"
+    }
+  },
+  "home": {
+    "logo": "딴짓거리들",
+    "subtitle": "",
+    "privacy": "개인정보 처리방침"
+  },
+  "games": {
+    "reaction-speed": {
+      "name": "반응속도 테스트",
+      "description": "초록색으로 바뀌면 터치하세요",
+      "wait": "기다려...",
+      "clickNow": "지금!!!",
+      "tooEarly": "성격 급하네 ㅋㅋ",
+      "result": "ms",
+      "ranks": {
+        "godlike": "님 로봇임?",
+        "insane": "반응속도 뭐냐",
+        "fast": "몸에 카페인 흐름",
+        "good": "반사신경 쌈@뽕",
+        "average": "평범한 지구인",
+        "slow": "거북이도 웃겠다",
+        "verySlow": "님 지금 자는 중?"
+      }
+    },
+    "aim-trainer": {
+      "name": "저격수",
+      "description": "나타나는 타겟을 빠르게 터치하세요",
+      "hit": "탕!",
+      "miss": "에휴",
+      "accuracy": "명중률",
+      "avgTime": "평균 시간",
+      "targetsHit": "맞춘 횟수",
+      "ranks": {
+        "godlike": "에임 핵 의심",
+        "insane": "이 구역의 스나이퍼",
+        "fast": "손목 무선으로 연결됨",
+        "good": "야 너 좀 치냐?",
+        "average": "그냥 그런 실력",
+        "slow": "과녁이 어디갔지?",
+        "verySlow": "화면 안 보고 침?"
+      }
+    },
+    "sand-tetris": {
+      "name": "흙트리스",
+      "description": "같은 색을 좌우로 연결하면 사라집니다\n점수가 올라가면 색이 추가됩니다",
+      "controls": {
+        "rotate": "↻",
+        "move": "← →",
+        "drop": "↓"
+      },
+      "levelUp": "큰일났다 이제",
+      "newColor": "색 추가 ㅅㄱ",
+      "pixelsCleared": "정복한 콩가루",
+      "ranks": {
+        "godlike": "건축왕 정주영",
+        "insane": "이 집 잘 짓네",
+        "fast": "벽돌 예술가",
+        "good": "야무지게 쌓음",
+        "average": "흙수저",
+        "slow": "반지하",
+        "verySlow": "콩가루 집안"
+      }
+    }
+  }
+}

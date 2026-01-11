@@ -1,5 +1,56 @@
 # 개발일지
 
+## 2026-01-11
+
+### 완료된 작업
+
+#### 1. 다국어 지원 (i18n) 구현
+- **언어 선택**: 첫 방문 시 한국어/영어 선택 모달
+- **Local Storage 저장**: 선택한 언어 영구 저장 (서버 비용 없음)
+- **번역 파일**: `src/shared/i18n/ko.json`, `en.json`
+- **LanguageContext**: 전역 언어 상태 관리
+
+#### 2. 불필요한 게임 삭제
+- **Number Memory** 삭제 (재미없음)
+- **Typing Speed** 삭제 (재미없음)
+- 관련 코드, 라우트, 타입 정리 완료
+
+#### 3. 한국어 워딩 개선
+- **게임 이름**:
+  - reaction-speed → "반응속도 테스트"
+  - aim-trainer → "저격수"
+  - sand-tetris → "흙트리스"
+- **랭크 라벨**: 병맛/밈 스타일 적용
+  - "님 로봇임?", "거북이도 웃겠다", "콩가루 집안" 등
+- **메인 로고**: "딴짓거리들" (영어: "ddangit")
+
+#### 4. 컴포넌트 다국어 적용
+- `GameLayout`: `title` → `gameId`로 변경, 동적 번역
+- `GameCard`: 게임 이름/설명 번역
+- `GameResult`: 버튼, 랭킹 메시지 번역
+- `RankingBoard`: "Today's Top 3" → "오늘의 TOP 3"
+- `NicknameModal`: 등수별 메시지 (1등/2등/3등)
+- 메인 페이지: 로고, 서브타이틀, 푸터 번역
+
+#### 5. UI 개선
+- description 줄바꿈 지원 (`whitespace-pre-line`)
+
+### 파일 구조
+
+```
+src/shared/
+├── i18n/
+│   ├── index.ts          # 번역 유틸리티
+│   ├── ko.json           # 한국어 번역
+│   └── en.json           # 영어 번역
+├── contexts/
+│   └── LanguageContext.tsx  # 언어 상태 관리
+└── components/
+    └── LanguageSelector.tsx # 언어 선택 모달
+```
+
+---
+
 ## 2026-01-10
 
 ### 완료된 작업

@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { NicknameModal } from './NicknameModal';
 import { RankingBoard } from './RankingBoard';
 import { useRanking } from '@/shared/hooks';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 interface GameResultProps {
   title: string;
@@ -30,6 +31,7 @@ export function GameResult({
   onShare,
   color,
 }: GameResultProps) {
+  const { t } = useLanguage();
   const {
     isChecking,
     isSubmitting,
@@ -103,7 +105,7 @@ export function GameResult({
             className="w-full py-3 mb-6 rounded-lg font-bold text-white transition-transform hover:scale-105"
             style={{ backgroundColor: color }}
           >
-            🏆 You&apos;re #{rankResult.rank}! Enter your name
+            🏆 #{rankResult.rank}! {t('common.enterNickname')}
           </button>
         )}
 
@@ -121,11 +123,11 @@ export function GameResult({
         <div className="flex flex-col gap-4">
           <div className="flex gap-4 justify-center">
             <Button onClick={handleRetry} variant="primary" size="lg">
-              Retry
+              {t('common.retry')}
             </Button>
             {onShare && (
               <Button onClick={onShare} variant="secondary" size="lg">
-                Share
+                {t('common.share')}
               </Button>
             )}
           </div>
@@ -133,7 +135,7 @@ export function GameResult({
             href="/"
             className="text-gray-500 hover:text-gray-300 transition-colors text-sm"
           >
-            ← Try other games
+            ← {t('common.back')}
           </Link>
         </div>
       </div>

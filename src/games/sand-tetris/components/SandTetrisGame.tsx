@@ -4,6 +4,7 @@ import { useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { useSandTetris } from '../hooks/useSandTetris';
 import { GAME_CONFIG, BLOCK_COLORS, getColorCount, getLevelIndex, LEVELS } from '../constants';
 import { GameResult } from '@/shared/components/game';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 const { GRID_WIDTH, GRID_HEIGHT, BLOCK_SIZE, DANGER_ZONE_RATIO } = GAME_CONFIG;
 
@@ -13,6 +14,7 @@ const CANVAS_WIDTH = GRID_WIDTH * SCALE;
 const CANVAS_HEIGHT = GRID_HEIGHT * SCALE;
 
 export function SandTetrisGame() {
+  const { t } = useLanguage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -313,17 +315,17 @@ export function SandTetrisGame() {
   if (phase === 'gameover') {
     return (
       <GameResult
-        title="Game Over"
+        title={t('common.gameOver')}
         score={formatScore(score)}
         scoreValue={score}
         gameId={GAME_CONFIG.id}
-        subtitle="pixels cleared"
+        subtitle={t('games.sand-tetris.pixelsCleared')}
         color={GAME_CONFIG.color}
         onRetry={reset}
         onShare={() => {
           if (navigator.share) {
             navigator.share({
-              title: 'Sand Tetris',
+              title: t('games.sand-tetris.name'),
               text: `I cleared ${formatScore(score)} pixels!`,
               url: window.location.href,
             });
@@ -343,12 +345,12 @@ export function SandTetrisGame() {
         onClick={handleStartGame}
       >
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          Sand Tetris
+          {t('games.sand-tetris.name')}
         </h1>
-        <p className="text-gray-400 mb-8">Tap to start</p>
+        <p className="text-gray-400 mb-8">{t('common.tapToStart')}</p>
 
         <div className="text-sm text-gray-500 text-center space-y-2 px-8">
-          <p className="text-gray-400 mb-4">Connect same colors from left to right!</p>
+          <p className="text-gray-400 mb-4 whitespace-pre-line">{t('games.sand-tetris.description')}</p>
           <div className="flex justify-center gap-2 mb-4">
             {BLOCK_COLORS.slice(0, LEVELS[0].colorCount).map((color, i) => (
               <div
@@ -359,9 +361,9 @@ export function SandTetrisGame() {
             ))}
           </div>
           <div className="text-gray-600 space-y-1">
-            <p>Top area = Rotate</p>
-            <p>Middle = Move left/right</p>
-            <p>Bottom = Drop</p>
+            <p>{t('games.sand-tetris.controls.rotate')}</p>
+            <p>{t('games.sand-tetris.controls.move')}</p>
+            <p>{t('games.sand-tetris.controls.drop')}</p>
           </div>
         </div>
       </div>
@@ -374,7 +376,7 @@ export function SandTetrisGame() {
       {/* 점수 */}
       <div className="w-full max-w-xs">
         <div className="text-center">
-          <p className="text-gray-500 text-xs uppercase tracking-widest">Score</p>
+          <p className="text-gray-500 text-xs uppercase tracking-widest">{t('common.score')}</p>
           <p className="text-3xl font-bold text-white">{formatScore(score)}</p>
         </div>
       </div>
@@ -412,9 +414,9 @@ export function SandTetrisGame() {
         {showLevelUp && newColorIndex !== null && (
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
             <div className="flex flex-col items-center animate-bounce">
-              <p className="text-2xl font-bold text-white mb-2">LEVEL UP!</p>
+              <p className="text-2xl font-bold text-white mb-2">{t('games.sand-tetris.levelUp')}</p>
               <div className="flex items-center gap-2 bg-black/70 px-4 py-2 rounded-lg">
-                <span className="text-white text-sm">New Color:</span>
+                <span className="text-white text-sm">{t('games.sand-tetris.newColor')}:</span>
                 <div
                   className="w-6 h-6 rounded animate-pulse"
                   style={{ backgroundColor: BLOCK_COLORS[newColorIndex] }}
@@ -428,13 +430,13 @@ export function SandTetrisGame() {
         {phase === 'playing' && (
           <div className="absolute inset-0 pointer-events-none flex flex-col opacity-20 rounded-xl overflow-hidden">
             <div className="h-[20%] flex items-center justify-center border-b border-white/10">
-              <span className="text-white text-xs">Rotate</span>
+              <span className="text-white text-xs">{t('games.sand-tetris.controls.rotate')}</span>
             </div>
             <div className="h-[60%] flex items-center justify-center">
-              <span className="text-white text-xs">Move</span>
+              <span className="text-white text-xs">{t('games.sand-tetris.controls.move')}</span>
             </div>
             <div className="h-[20%] flex items-center justify-center border-t border-white/10">
-              <span className="text-white text-xs">Drop</span>
+              <span className="text-white text-xs">{t('games.sand-tetris.controls.drop')}</span>
             </div>
           </div>
         )}
