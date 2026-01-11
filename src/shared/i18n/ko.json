@@ -70,8 +70,8 @@
         "move": "← →",
         "drop": "↓"
       },
-      "levelUp": "큰일났다 이제",
-      "newColor": "색 추가 ㅅㄱ",
+      "levelUp": "레벨업!",
+      "newColor": "블록 추가!",
       "pixelsCleared": "정복한 콩가루",
       "ranks": {
         "godlike": "건축왕 정주영",

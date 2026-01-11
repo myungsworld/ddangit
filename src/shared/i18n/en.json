@@ -70,8 +70,8 @@
         "move": "Move",
         "drop": "Drop"
       },
-      "levelUp": "Uh oh, it's getting harder!",
-      "newColor": "New Color",
+      "levelUp": "level up!",
+      "newColor": "New Block",
       "pixelsCleared": "pixels cleared",
       "ranks": {
         "godlike": "Sand Master",
