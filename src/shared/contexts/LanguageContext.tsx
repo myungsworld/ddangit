@@ -35,9 +35,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   // 번역 함수
   const t = (key: string): string => {
-    if (!language) return key;
+    if (!language) return '';
     return getNestedValue(translations[language] as Record<string, unknown>, key);
   };
+
+  // 로딩 중일 때 빈 화면 표시 (깜빡임 방지)
+  if (!isReady) {
+    return (
+      <div className="min-h-screen bg-gray-950" />
+    );
+  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, isReady }}>
