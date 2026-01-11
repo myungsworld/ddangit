@@ -2,11 +2,13 @@
 
 import { Platform, SocialAdapter, PostResult, PostOptions } from './types';
 import { TwitterAdapter } from './adapters/twitter';
+import { BlueskyAdapter } from './adapters/bluesky';
 import { DiscordAdapter } from './adapters/discord';
 
 // 어댑터 레지스트리
 const adapters: Record<Platform, () => SocialAdapter> = {
   twitter: () => new TwitterAdapter(),
+  bluesky: () => new BlueskyAdapter(),
   discord: () => new DiscordAdapter(),
   reddit: () => { throw new Error('Reddit adapter not implemented'); },
   instagram: () => { throw new Error('Instagram adapter not implemented'); },
