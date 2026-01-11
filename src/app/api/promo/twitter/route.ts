@@ -2,48 +2,82 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSocialAdapter } from '@/infrastructure/social';
 import { generateMessage, MessageType } from '@/infrastructure/social/templates';
 
-// GET /api/promo/twitter - Cron 또는 상태 확인
+// 요청 권한 검증
+function isAuthorized(request: NextRequest): boolean {
+  // 1. 로컬 환경은 항상 허용
+  const host = request.headers.get('host') || '';
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    return true;
+  }
+
+  // 2. API 키 검증 (프로덕션 수동 발송용)
+  const apiKey = request.headers.get('x-api-key');
+  const validKey = process.env.PROMO_API_KEY;
+  if (validKey && apiKey === validKey) {
+    return true;
+  }
+
+  return false;
+}
+
+// GET /api/promo/twitter - Cron 전용
 export async function GET(request: NextRequest) {
+  // Vercel Cron만 허용 (Vercel이 자동으로 서명 검증)
   const isCron = request.headers.get('x-vercel-cron') === '1';
-  const adapter = getSocialAdapter('twitter');
 
-  if (isCron) {
-    console.log('[Promo][Twitter] Cron triggered at', new Date().toISOString());
-
-    // 50% 확률로 게임별 홍보 vs 일반 홍보
-    const type: MessageType = Math.random() > 0.5 ? 'game_specific' : 'general';
-    const message = generateMessage({ type });
-    const result = await adapter.post({ text: message });
-
-    console.log(`[Promo][Twitter] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
-
+  if (!isCron) {
+    // Cron이 아니면 상태만 반환 (트윗 발송 안함)
+    const adapter = getSocialAdapter('twitter');
     return NextResponse.json({
-      success: result.status === 'success',
-      postUrl: result.postUrl,
-      message: result.message,
+      platform: 'twitter',
+      status: 'ok',
+      configured: adapter.isConfigured(),
+      schedule: 'Daily at 09:00 UTC',
     });
   }
 
+  console.log('[Promo][Twitter] Cron triggered at', new Date().toISOString());
+
+  const adapter = getSocialAdapter('twitter');
+  const message = generateMessage({ type: 'general' });
+  const result = await adapter.post({ text: message });
+
+  console.log(`[Promo][Twitter] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
+
   return NextResponse.json({
-    platform: 'twitter',
-    status: 'ok',
-    configured: adapter.isConfigured(),
-    schedule: 'Daily at 09:00 UTC',
+    success: result.status === 'success',
+    postUrl: result.postUrl,
+    message: result.message,
   });
 }
 
-// POST /api/promo/twitter - 수동 발송
+// POST /api/promo/twitter - 수동 발송 (로컬 또는 API 키 필요)
 export async function POST(request: NextRequest) {
+  // 권한 검증
+  if (!isAuthorized(request)) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
+  // Twitter API 설정 확인
+  const adapter = getSocialAdapter('twitter');
+  if (!adapter.isConfigured()) {
+    return NextResponse.json(
+      { success: false, error: 'Twitter API not configured' },
+      { status: 503 }
+    );
+  }
+
   try {
     const body = await request.json().catch(() => ({}));
-    const { type = 'general', customMessage, gameId } = body as {
+    const { type = 'general', customMessage } = body as {
       type?: MessageType;
       customMessage?: string;
-      gameId?: string;
     };
 
-    const adapter = getSocialAdapter('twitter');
-    const message = customMessage || generateMessage({ type, gameId });
+    const message = customMessage || generateMessage({ type });
     const result = await adapter.post({ text: message });
 
     console.log(`[Promo][Twitter] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);

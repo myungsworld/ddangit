@@ -31,33 +31,45 @@ export interface SocialAdapter {
 }
 
 // 해시태그 풀 (랜덤 선택용)
+// 트위터는 2-3개 해시태그가 적당 (과하면 스팸으로 인식)
 export const HASHTAG_POOL = {
+  // 브랜드 태그 (항상 포함)
+  brand: ['ddangit', '딴짓'],
+  // 한국어 태그 (짧고 자주 검색되는 태그)
   korean: [
-    '미니게임',
-    '심심풀이',
-    '브라우저게임',
-    '무료게임',
-    '캐주얼게임',
-    '반응속도테스트',
-    '타자연습',
-    '두뇌게임',
-    '시간때우기',
+    '심심',
+    '게임',
+    '무료',
+    '테트리스',
+    '퍼즐',
+    '반응속도',
+    '시간순삭',
+    '꿀잼',
   ],
+  // 영어 태그 (짧고 자주 검색되는 태그)
   english: [
-    'minigames',
-    'browsergames',
-    'freegames',
-    'casualgames',
-    'webgames',
-    'indiegames',
-    'reactiontest',
-    'aimtrainer',
+    'bored',
+    'games',
+    'free',
+    'tetris',
+    'puzzle',
+    'fun',
+    'play',
+    'browser',
   ],
 };
 
-// 랜덤 해시태그 선택
-export function pickRandomHashtags(count: number = 3, lang: 'korean' | 'english' = 'english'): string[] {
-  const pool = HASHTAG_POOL[lang];
+// 랜덤 해시태그 선택 (브랜드 태그 + 언어별 태그)
+export function pickRandomHashtags(count: number = 2, lang?: 'ko' | 'en'): string[] {
+  // 언어 자동 선택 (50/50)
+  const selectedLang = lang ?? (Math.random() > 0.5 ? 'ko' : 'en');
+  const langKey = selectedLang === 'ko' ? 'korean' : 'english';
+
+  // 브랜드 태그 1개 + 언어별 태그 (count-1)개
+  const brandTag = HASHTAG_POOL.brand[selectedLang === 'ko' ? 1 : 0]; // 땅잇 or ddangit
+  const pool = HASHTAG_POOL[langKey];
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count).map((tag) => `#${tag}`);
+  const langTags = shuffled.slice(0, count - 1);
+
+  return [`#${brandTag}`, ...langTags.map(tag => `#${tag}`)];
 }

@@ -2,7 +2,7 @@
 
 import OAuth from 'oauth-1.0a';
 import crypto from 'crypto';
-import { SocialAdapter, PostResult, PostOptions, pickRandomHashtags } from '../types';
+import { SocialAdapter, PostResult, PostOptions } from '../types';
 
 const TWITTER_API_URL = 'https://api.twitter.com/2/tweets';
 
@@ -57,9 +57,11 @@ export class TwitterAdapter implements SocialAdapter {
 
       const authHeader = oauth.toHeader(oauth.authorize(requestData, token));
 
-      // 해시태그 추가
-      const hashtags = options.tags?.length ? options.tags : pickRandomHashtags(3);
-      const text = `${options.text}\n\n${hashtags.join(' ')}`;
+      // 해시태그는 이미 템플릿에 포함되어 있음
+      // 커스텀 태그가 있으면 추가
+      const text = options.tags?.length
+        ? `${options.text}\n\n${options.tags.join(' ')}`
+        : options.text;
 
       const response = await fetch(TWITTER_API_URL, {
         method: 'POST',
