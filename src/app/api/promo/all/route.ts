@@ -2,24 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSocialAdapter, PostResult } from '@/infrastructure/social';
 import { generateMessage } from '@/infrastructure/social/templates';
 import { sendPromoResultEmail } from '@/infrastructure/notification/email';
-
-// 요청 권한 검증
-function isAuthorized(request: NextRequest): boolean {
-  // 1. 로컬 환경은 항상 허용
-  const host = request.headers.get('host') || '';
-  if (host.includes('localhost') || host.includes('127.0.0.1')) {
-    return true;
-  }
-
-  // 2. API 키 검증 (프로덕션 수동 발송용)
-  const apiKey = request.headers.get('x-api-key');
-  const validKey = process.env.PROMO_API_KEY;
-  if (validKey && apiKey === validKey) {
-    return true;
-  }
-
-  return false;
-}
+import { isAuthorized } from '@/infrastructure/social/auth';
 
 // GET /api/promo/all - Cron 전용 (모든 플랫폼에 발송)
 export async function GET(request: NextRequest) {

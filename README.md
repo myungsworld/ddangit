@@ -23,8 +23,8 @@ src/
 ├── app/                      # Next.js App Router
 │   ├── api/
 │   │   ├── promo/            # 홍보 자동화 API
-│   │   │   ├── route.ts      # 전체 플랫폼 통합
-│   │   │   └── twitter/      # Twitter API
+│   │   │   ├── all/          # 전체 플랫폼 (Cron용)
+│   │   │   └── twitter/      # Twitter 단독
 │   │   └── ranking/          # 랭킹 API
 │   ├── games/
 │   │   ├── reaction-speed/
@@ -48,12 +48,15 @@ src/
 │   │   │   └── memory.ts     # 인메모리 (개발용)
 │   │   ├── types/
 │   │   └── index.ts          # 팩토리 + Upstash 어댑터
-│   └── social/               # SNS 플랫폼 어댑터
-│       ├── adapters/
-│       │   ├── twitter.ts
-│       │   └── discord.ts
-│       ├── types/
-│       └── templates.ts      # 메시지 템플릿
+│   ├── social/               # SNS 플랫폼 어댑터
+│   │   ├── adapters/
+│   │   │   ├── twitter.ts    # Twitter/X
+│   │   │   └── bluesky.ts    # Bluesky
+│   │   ├── auth.ts           # API 인증 유틸리티
+│   │   ├── types/
+│   │   └── templates.ts      # 메시지 템플릿
+│   └── notification/         # 알림 서비스
+│       └── email.ts          # Resend 이메일
 │
 ├── lib/                      # 비즈니스 로직
 │   └── ranking/              # 랭킹 서비스
@@ -69,6 +72,9 @@ src/
     │   └── useRanking.ts     # 랭킹 API 훅
     ├── types/
     └── constants/
+
+scripts/
+└── promo.sh                  # 수동 홍보 스크립트
 
 docs/                         # 문서
 ├── development.md            # 개발 가이드

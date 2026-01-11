@@ -1,6 +1,51 @@
 # 개발일지
 
-## 2026-01-11
+## 2026-01-11 (오후)
+
+### 완료된 작업
+
+#### 1. Bluesky 홍보 추가
+- **BlueskyAdapter**: AT Protocol REST API 직접 구현
+- 영어 전용 홍보 (글로벌 타겟)
+- App Password 인증
+
+#### 2. 통합 Cron 엔드포인트
+- `/api/promo/all`: Twitter + Bluesky 동시 발송
+- 각 플랫폼 독립 실행 (하나 실패해도 다른 플랫폼 계속)
+- Vercel Hobby 플랜 cron 제한 고려 (2개)
+
+#### 3. 이메일 알림 시스템
+- **Resend API** 연동
+- 성공/실패 모두 이메일 발송
+- 발송 결과 링크 포함
+
+#### 4. 코드 정리
+- **삭제됨**:
+  - `.env.prod`, `.env.vercel` (불필요한 환경변수 파일)
+  - `discord.ts` (미사용 어댑터)
+  - `/api/promo/route.ts` (all로 통합)
+  - `getActiveSocialAdapters()`, `postToAllPlatforms()` (미사용 함수)
+- **수정됨**:
+  - `Platform` 타입: `twitter | bluesky`만 유지
+  - `isAuthorized` 함수: `auth.ts`로 통합
+
+#### 5. 수동 홍보 스크립트
+- `scripts/promo.sh` 추가
+- 로컬/프로덕션 환경 선택 가능
+
+### 해결한 이슈
+
+1. **Bluesky 인증 실패**
+   - 원인: Vercel 환경변수에 `\n` 개행문자 포함
+   - 해결: `printf`로 환경변수 설정
+
+2. **Cron 실행 안 됨**
+   - 원인: `vercel.json` 경로가 구버전 (`/api/promo/twitter`)
+   - 해결: `/api/promo/all`로 변경
+
+---
+
+## 2026-01-11 (오전)
 
 ### 완료된 작업
 
@@ -108,22 +153,16 @@ src/shared/
   - 로딩 스피너 추가
   - 에러 상태 표시
 
-- [ ] **디버그 엔드포인트 제거**
-  - `/api/ranking?debug=env` 프로덕션 배포 전 제거
-
 - [ ] **코드 정리**
   - `@vercel/kv` 패키지 제거 (사용 안 함)
   - 불필요한 console.log 정리
 
 ### 우선순위 중간
 
-- [ ] **Discord Webhook 연동**
-  - `DiscordAdapter` 구현 완료
-  - `/api/promo/discord` 엔드포인트 생성
-
 - [ ] **메시지 템플릿 다양화**
   - 게임별 홍보 문구
   - 시간대별 다른 메시지
+  - 중복 방지 로직
 
 - [ ] **랭킹 확장**
   - 주간/월간 랭킹

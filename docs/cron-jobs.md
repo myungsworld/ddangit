@@ -2,20 +2,22 @@
 
 ## 현재 설정
 
-### Twitter 자동 홍보
+### 통합 홍보 (Twitter + Bluesky)
 
 | 항목 | 값 |
 |------|-----|
-| **경로** | `/api/promo/twitter` |
+| **경로** | `/api/promo/all` |
 | **스케줄** | `0 9 * * *` (매일 09:00 UTC) |
 | **한국시간** | 매일 18:00 KST |
 | **설정 파일** | `vercel.json` |
+| **플랫폼** | Twitter (한국어/영어 랜덤), Bluesky (영어) |
+| **알림** | 이메일 (성공/실패 모두) |
 
 ```json
 {
   "crons": [
     {
-      "path": "/api/promo/twitter",
+      "path": "/api/promo/all",
       "schedule": "0 9 * * *"
     }
   ]
@@ -26,10 +28,12 @@
 
 ## 작동 방식
 
-1. Vercel이 스케줄에 따라 `/api/promo/twitter`에 GET 요청
+1. Vercel이 스케줄에 따라 `/api/promo/all`에 GET 요청
 2. 요청 헤더에 `x-vercel-cron: 1` 포함
-3. 랜덤 메시지 + 해시태그 생성
-4. Twitter API로 트윗 발송
+3. 각 플랫폼 독립 실행 (하나가 실패해도 다른 플랫폼 계속 진행)
+   - Twitter: 한국어/영어 랜덤 메시지 발송
+   - Bluesky: 영어 메시지 발송
+4. 결과 이메일 발송 (Resend)
 5. 결과 로그 기록
 
 ---
@@ -46,103 +50,104 @@
 
 ```bash
 # 상태 확인
-curl https://ddangit.vercel.app/api/promo/twitter
+curl https://ddangit.vercel.app/api/promo/all
 
 # 응답 예시
 {
-  "platform": "twitter",
   "status": "ok",
-  "configured": true,
+  "platforms": {
+    "twitter": true,
+    "bluesky": true
+  },
   "schedule": "Daily at 09:00 UTC"
 }
 ```
 
+### 이메일 알림
+
+Cron 실행 후 결과 이메일 발송:
+- 성공: `[ddangit] ✅ Promo Success - twitter, bluesky`
+- 실패: `[ddangit] ❌ Promo Failed - [실패한 플랫폼]`
+
 ### 로그 확인
 
-Vercel Dashboard → **Logs** → `[Promo][Twitter]` 검색
+Vercel Dashboard → **Logs** → `[Promo]` 검색
 
 ```
-[Promo][Twitter] Cron triggered at 2026-01-10T09:00:00.000Z
+[Promo][All] Cron triggered at 2026-01-11T09:00:00.000Z
 [Promo][Twitter] ✅ Tweet posted successfully
+[Promo][Bluesky] ✅ Post created successfully
 ```
 
 ---
 
 ## 수동 실행
 
+### 스크립트 사용
+
 ```bash
-# 일반 홍보
-curl -X POST https://ddangit.vercel.app/api/promo/twitter \
+# 로컬 테스트
+./scripts/promo.sh local
+
+# 프로덕션 (모든 플랫폼)
+./scripts/promo.sh prod
+```
+
+### curl 직접 호출
+
+```bash
+# 로컬 - 모든 플랫폼
+curl -X POST http://localhost:3000/api/promo/all \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Twitter만
+curl -X POST http://localhost:3000/api/promo/twitter \
   -H "Content-Type: application/json" \
   -d '{"type": "general"}'
-
-# 커스텀 메시지
-curl -X POST https://ddangit.vercel.app/api/promo/twitter \
-  -H "Content-Type: application/json" \
-  -d '{"customMessage": "Check out ddangit! https://ddangit.vercel.app"}'
 ```
 
 ---
 
-## 홍보 플랫폼 확장 체크리스트
+## 환경변수
 
-### SNS 플랫폼
+### 필수 (Vercel에 설정)
 
-| 플랫폼 | 상태 | API 문서 | 비고 |
-|--------|------|----------|------|
-| Twitter/X | ✅ 완료 | [Developer Portal](https://developer.twitter.com) | OAuth 1.0a |
-| Discord | 🔲 준비됨 | [Webhook Guide](https://discord.com/developers/docs/resources/webhook) | Webhook 방식, 무료 |
-| Reddit | �� 미정 | [API Docs](https://www.reddit.com/dev/api) | 스팸 정책 주의 |
-| Facebook | 🔲 미정 | [Graph API](https://developers.facebook.com/docs/graph-api) | 페이지 필요 |
-| Instagram | 🔲 미정 | [Basic Display API](https://developers.facebook.com/docs/instagram-basic-display-api) | 비즈니스 계정 필요 |
+| 변수 | 설명 |
+|------|------|
+| `TWITTER_API_KEY` | Twitter API Key |
+| `TWITTER_API_SECRET` | Twitter API Secret |
+| `TWITTER_ACCESS_TOKEN` | Twitter Access Token |
+| `TWITTER_ACCESS_SECRET` | Twitter Access Secret |
+| `BLUESKY_IDENTIFIER` | Bluesky 핸들 (예: ddangit.bsky.social) |
+| `BLUESKY_PASSWORD` | Bluesky App Password |
+| `RESEND_API_KEY` | Resend API Key |
+| `NOTIFICATION_EMAIL` | 알림 받을 이메일 |
 
-### 한국 플랫폼
+### 선택
 
-| 플랫폼 | 상태 | API 문서 | 비고 |
-|--------|------|----------|------|
-| 네이버 블로그 | 🔲 미정 | [Naver Developers](https://developers.naver.com) | 블로그 API |
-| 카카오 채널 | 🔲 미정 | [Kakao Developers](https://developers.kakao.com) | 채널 메시지 |
-| 에브리타임 | 🔲 미정 | 공식 API 없음 | 대학생 커뮤니티 |
-
-### 게임 커뮤니티
-
-| 플랫폼 | 상태 | URL | 비고 |
-|--------|------|-----|------|
-| 인벤 | 🔲 미정 | [inven.co.kr](https://www.inven.co.kr) | 게시판 홍보 |
-| 루리웹 | 🔲 미정 | [ruliweb.com](https://ruliweb.com) | 게시판 홍보 |
-| 디시인사이드 | 🔲 미정 | [dcinside.com](https://dcinside.com) | 갤러리 홍보 |
-| Indie Hackers | 🔲 미정 | [indiehackers.com](https://www.indiehackers.com) | 영문, 인디 개발자 |
-| Product Hunt | 🔲 미정 | [producthunt.com](https://www.producthunt.com) | 영문, 런칭용 |
-| Hacker News | 🔲 미정 | [news.ycombinator.com](https://news.ycombinator.com) | 영문, Show HN |
-
-### 게임 배포 플랫폼
-
-| 플랫폼 | 상태 | URL | 비고 |
-|--------|------|-----|------|
-| itch.io | 🔲 미정 | [itch.io](https://itch.io) | 웹게임 호스팅 가능 |
-| Newgrounds | 🔲 미정 | [newgrounds.com](https://www.newgrounds.com) | 플래시 게임 커뮤니티 |
-| Kongregate | 🔲 미정 | [kongregate.com](https://www.kongregate.com) | 웹게임 포털 |
-| Game Jolt | 🔲 미정 | [gamejolt.com](https://gamejolt.com) | 인디게임 플랫폼 |
-| Crazy Games | 🔲 미정 | [crazygames.com](https://www.crazygames.com) | 웹게임 포털 |
+| 변수 | 설명 |
+|------|------|
+| `PROMO_API_KEY` | 프로덕션 수동 발송용 API 키 |
 
 ---
 
-## 다음 작업
+## 홍보 플랫폼
 
-### 우선순위 높음
-- [ ] Discord Webhook 연동 (`/api/promo/discord`)
-- [ ] Cron 스케줄 다양화 (주 2-3회)
-- [ ] 메시지 중복 방지 로직
+### 활성화됨
 
-### 우선순위 중간
-- [ ] Product Hunt 런칭 준비
-- [ ] itch.io 게임 등록
-- [ ] 한국 커뮤니티 홍보 글 템플릿 작성
+| 플랫폼 | 상태 | 언어 | 비고 |
+|--------|------|------|------|
+| Twitter/X | ✅ 완료 | 한국어/영어 랜덤 | OAuth 1.0a |
+| Bluesky | ✅ 완료 | 영어 | AT Protocol REST API |
 
-### 우선순위 낮음
-- [ ] 카카오 채널 연동
-- [ ] 네이버 블로그 자동 포스팅
-- [ ] Reddit 연동 (정책 검토 후)
+### 미정
+
+| 플랫폼 | 상태 | 비고 |
+|--------|------|------|
+| Discord | 🔲 미정 | Webhook 방식, 검색 유입 어려움 |
+| Reddit | 🔲 미정 | 스팸 정책 주의, 수동 권장 |
+| Product Hunt | 🔲 미정 | 런칭용 |
 
 ---
 
@@ -159,7 +164,6 @@ curl -X POST https://ddangit.vercel.app/api/promo/twitter \
 ```
 
 **예시:**
-- `0 9 * * *` - 매일 09:00 UTC
+- `0 9 * * *` - 매일 09:00 UTC (KST 18:00)
 - `0 9 * * 1,4` - 월,목 09:00 UTC
 - `0 9,21 * * *` - 매일 09:00, 21:00 UTC
-- `0 */6 * * *` - 6시간마다
