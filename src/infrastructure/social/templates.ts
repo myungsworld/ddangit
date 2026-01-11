@@ -16,10 +16,9 @@ interface MessageContext {
   gameId?: string; // 특정 게임 홍보용
 }
 
-// 게임 목록 동적 생성
+// 게임 목록 동적 생성 (개행 + 링크 포함)
 function getGameListText(): string {
-  const gameNames = GAMES.map(g => `${g.icon} ${g.name}`);
-  return gameNames.join(', ');
+  return GAMES.map(g => `${g.icon} ${g.name}\n👉 ${BASE_URL}${g.path}`).join('\n\n');
 }
 
 // 랜덤 게임 선택
@@ -70,11 +69,10 @@ const GAME_TEMPLATES_EN: Record<string, string[]> = {
 // 메시지 템플릿 풀 (한국어)
 const TEMPLATES_KO: Record<MessageType, string[]> = {
   general: [
-    '🎮 심심할 때 딱 좋은 미니게임!\n\n{games}\n👉 ' + BASE_URL,
-    '⚡ 얼마나 빠를까?\n\n간단한 미니게임으로 테스트해보세요:\n👉 ' + BASE_URL,
-    '🎯 5분만 시간 때우기 딱 좋은 게임\n\n무료 브라우저 게임:\n👉 ' + BASE_URL,
-    '🧠 두뇌 트레이닝 미니게임\n\n{games}\n👉 ' + BASE_URL,
-    '😴 심심해? 이거 해봐\n\n미니게임 모음:\n👉 ' + BASE_URL,
+    '🎮 심심할 때 딱 좋은 미니게임!\n\n{games}',
+    '⚡ 간단한 미니게임으로 테스트해보세요!\n\n{games}',
+    '🧠 두뇌 트레이닝 미니게임\n\n{games}',
+    '😴 심심해? 이거 해봐\n\n{games}',
   ],
   new_game: [
     '🆕 새 게임 추가!\n\n지금 바로 플레이:\n👉 ' + BASE_URL,
@@ -93,11 +91,10 @@ const TEMPLATES_KO: Record<MessageType, string[]> = {
 // 메시지 템플릿 풀 (영어)
 const TEMPLATES_EN: Record<MessageType, string[]> = {
   general: [
-    '🎮 Fun mini-games for your break!\n\n{games}\n👉 ' + BASE_URL,
-    '⚡ How fast are you?\n\nTest yourself with simple mini-games:\n👉 ' + BASE_URL,
-    '🎯 Perfect for a quick 5-minute break\n\nFree browser games:\n👉 ' + BASE_URL,
-    '🧠 Brain training mini-games\n\n{games}\n👉 ' + BASE_URL,
-    '😴 Bored? Try this!\n\nMini-game collection:\n👉 ' + BASE_URL,
+    '🎮 Fun mini-games for your break!\n\n{games}',
+    '⚡ Test yourself with simple mini-games!\n\n{games}',
+    '🧠 Brain training mini-games\n\n{games}',
+    '😴 Bored? Try this!\n\n{games}',
   ],
   new_game: [
     '🆕 New game added!\n\nPlay now:\n👉 ' + BASE_URL,
