@@ -14,16 +14,16 @@ import {
   checkGameOver,
 } from "../utils/sandPhysics";
 
-const { GRID_WIDTH, BLOCK_SIZE, DROP_INTERVAL, SAND_UPDATE_INTERVAL } =
+const { GRID_WIDTH, BLOCK_SIZE, DROP_INTERVAL, SAND_UPDATE_INTERVAL, SCORE_DIVISOR } =
   GAME_CONFIG;
 
 // 애니메이션 설정
 const CLEAR_ANIMATION_FRAMES = 8; // 깜빡임 프레임 수
 const CLEAR_ANIMATION_INTERVAL = 50; // 각 프레임 간격 (ms)
 
-// 새 블록 생성 함수 (상단에서 시작)
-function createNewBlock(): FallingBlock {
-  const { shape, colorIndex } = getRandomBlock();
+// 새 블록 생성 함수 (상단에서 시작, 점수에 따라 색상 수 결정)
+function createNewBlock(score: number = 0): FallingBlock {
+  const { shape, colorIndex } = getRandomBlock(score);
   const blockWidth = shape[0].length * BLOCK_SIZE;
   return {
     shape,
@@ -46,8 +46,8 @@ export function useSandTetris() {
   const [state, setState] = useState<GameState>(initialState);
   const gameLoopRef = useRef<number | null>(null);
   const stateRef = useRef<GameState>(state);
-  const skipNextDropRef = useRef(false); // hardDrop 직후 자동 드롭 스킵
-  const lastHardDropTimeRef = useRef(0); // 마지막 hardDrop 시간 (연속 호출 방지)
+  const skipNextDropRef = useRef(false);
+  const lastHardDropTimeRef = useRef(0);
 
   stateRef.current = state;
 
@@ -78,12 +78,14 @@ export function useSandTetris() {
               currentState.clearingPixels
             );
             const clearedCount = currentState.clearingPixels.length;
+            // 점수: 클리어된 픽셀 / SCORE_DIVISOR
+            const addedScore = Math.floor(clearedCount / SCORE_DIVISOR);
 
             setState({
               ...currentState,
               phase: "playing",
               grid: newGrid,
-              score: currentState.score + clearedCount,
+              score: currentState.score + addedScore,
               clearingPixels: [],
               clearingFrame: 0,
             });
@@ -110,19 +112,22 @@ export function useSandTetris() {
 
       // 모래 물리 업데이트
       if (now - lastSandTime >= SAND_UPDATE_INTERVAL) {
-        newGrid = updateSandPhysics(newGrid);
+        const result = updateSandPhysics(newGrid);
+        newGrid = result.grid;
         lastSandTime = now;
         needsUpdate = true;
 
-        // 클리어 체크 (모래가 안정화된 후)
-        const pixelsToClear = findPixelsToClear(newGrid);
-        if (pixelsToClear.length > 0) {
-          newClearingPixels = pixelsToClear;
-          newPhase = "clearing";
+        // 모래가 안정화되었을 때만 클리어 체크
+        if (!result.changed) {
+          const pixelsToClear = findPixelsToClear(newGrid);
+          if (pixelsToClear.length > 0) {
+            newClearingPixels = pixelsToClear;
+            newPhase = "clearing";
+          }
         }
       }
 
-      // 블록 드롭 (클리어 중이 아닐 때만, hardDrop 직후에는 스킵)
+      // 블록 드롭
       if (
         newPhase === "playing" &&
         now - lastDropTime >= DROP_INTERVAL &&
@@ -149,8 +154,8 @@ export function useSandTetris() {
             newPhase = "gameover";
             newBlock = null;
           } else {
-            // 새 블록 생성
-            newBlock = createNewBlock();
+            // 새 블록 생성 (현재 점수 기준)
+            newBlock = createNewBlock(currentState.score);
           }
         } else {
           // 아래로 이동
@@ -164,7 +169,7 @@ export function useSandTetris() {
       // hardDrop 스킵 플래그 리셋
       if (skipNextDropRef.current) {
         skipNextDropRef.current = false;
-        lastDropTime = now; // 타이머도 리셋
+        lastDropTime = now;
       }
 
       if (needsUpdate) {
@@ -272,10 +277,10 @@ export function useSandTetris() {
     });
   }, []);
 
-  // 하드 드롭 (연속 호출 방지: 300ms 쓰로틀)
+  // 하드 드롭
   const hardDrop = useCallback(() => {
     const now = performance.now();
-    if (now - lastHardDropTimeRef.current < 150) return; // 300ms 내 재호출 무시
+    if (now - lastHardDropTimeRef.current < 150) return;
     lastHardDropTimeRef.current = now;
 
     setState((prev) => {
@@ -316,13 +321,12 @@ export function useSandTetris() {
         };
       }
 
-      // 다음 자동 드롭 스킵 (hardDrop 직후 바로 떨어지는 것 방지)
       skipNextDropRef.current = true;
 
       return {
         ...prev,
         grid: newGrid,
-        currentBlock: createNewBlock(),
+        currentBlock: createNewBlock(prev.score),
       };
     });
   }, []);

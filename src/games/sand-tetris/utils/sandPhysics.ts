@@ -1,6 +1,6 @@
 // 모래 물리 시뮬레이션
 import { Cell, ClearingPixel } from '../types';
-import { GAME_CONFIG, BLOCK_COLORS } from '../constants';
+import { GAME_CONFIG } from '../constants';
 
 const { GRID_WIDTH, GRID_HEIGHT, DANGER_ZONE_RATIO } = GAME_CONFIG;
 
@@ -11,9 +11,10 @@ export function createEmptyGrid(): Cell[][] {
     .map(() => Array(GRID_WIDTH).fill(0));
 }
 
-// 모래 물리 업데이트 (한 프레임)
-export function updateSandPhysics(grid: Cell[][]): Cell[][] {
+// 모래 물리 업데이트 (한 프레임) - 변경 여부도 반환
+export function updateSandPhysics(grid: Cell[][]): { grid: Cell[][], changed: boolean } {
   const newGrid = grid.map(row => [...row]);
+  let changed = false;
 
   // 아래에서 위로 순회 (맨 아래 줄은 제외)
   for (let y = GRID_HEIGHT - 2; y >= 0; y--) {
@@ -29,6 +30,7 @@ export function updateSandPhysics(grid: Cell[][]): Cell[][] {
       if (newGrid[y + 1][x] === 0) {
         newGrid[y + 1][x] = cell;
         newGrid[y][x] = 0;
+        changed = true;
         continue;
       }
 
@@ -39,23 +41,27 @@ export function updateSandPhysics(grid: Cell[][]): Cell[][] {
         if (x > 0 && newGrid[y + 1][x - 1] === 0) {
           newGrid[y + 1][x - 1] = cell;
           newGrid[y][x] = 0;
+          changed = true;
         } else if (x < GRID_WIDTH - 1 && newGrid[y + 1][x + 1] === 0) {
           newGrid[y + 1][x + 1] = cell;
           newGrid[y][x] = 0;
+          changed = true;
         }
       } else {
         if (x < GRID_WIDTH - 1 && newGrid[y + 1][x + 1] === 0) {
           newGrid[y + 1][x + 1] = cell;
           newGrid[y][x] = 0;
+          changed = true;
         } else if (x > 0 && newGrid[y + 1][x - 1] === 0) {
           newGrid[y + 1][x - 1] = cell;
           newGrid[y][x] = 0;
+          changed = true;
         }
       }
     }
   }
 
-  return newGrid;
+  return { grid: newGrid, changed };
 }
 
 // BFS로 같은 색 연결 탐색 (왼쪽 벽 → 오른쪽 벽)
@@ -107,16 +113,25 @@ function findConnectedPixels(grid: Cell[][], startY: number, colorIndex: number)
 // 클리어할 픽셀들 찾기 (삭제하지 않고 좌표만 반환)
 export function findPixelsToClear(grid: Cell[][]): ClearingPixel[] {
   const allPixels: ClearingPixel[] = [];
-  const colorCount = BLOCK_COLORS.length;
+  const checked = new Set<string>();
 
-  for (let colorIndex = 1; colorIndex <= colorCount; colorIndex++) {
-    for (let y = 0; y < GRID_HEIGHT; y++) {
-      if (grid[y][0] === colorIndex) {
-        const connected = findConnectedPixels(grid, y, colorIndex);
-        if (connected.length > 0) {
-          allPixels.push(...connected);
+  for (let y = 0; y < GRID_HEIGHT; y++) {
+    const colorIndex = grid[y][0];
+    if (colorIndex === 0) continue;
+
+    const key = `${y},${colorIndex}`;
+    if (checked.has(key)) continue;
+    checked.add(key);
+
+    const connected = findConnectedPixels(grid, y, colorIndex);
+    if (connected.length > 0) {
+      // 찾은 픽셀들의 시작점도 checked에 추가
+      for (const [py] of connected) {
+        if (grid[py][0] === colorIndex) {
+          checked.add(`${py},${colorIndex}`);
         }
       }
+      allPixels.push(...connected);
     }
   }
 

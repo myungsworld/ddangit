@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef, useEffect, useCallback, useMemo } from 'react';
+import { useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { useSandTetris } from '../hooks/useSandTetris';
-import { GAME_CONFIG, BLOCK_COLORS } from '../constants';
+import { GAME_CONFIG, BLOCK_COLORS, getColorCount, LEVEL_UP_SCORE } from '../constants';
 import { GameResult } from '@/shared/components/game';
 
 const { GRID_WIDTH, GRID_HEIGHT, BLOCK_SIZE, DANGER_ZONE_RATIO } = GAME_CONFIG;
@@ -28,6 +28,30 @@ export function SandTetrisGame() {
     hardDrop,
     reset,
   } = useSandTetris();
+
+  // 레벨업 애니메이션 상태
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const prevScoreRef = useRef(0);
+
+  // 현재 사용 가능한 색상 수
+  const colorCount = getColorCount(score);
+
+  // 10000점 달성 시 레벨업 애니메이션
+  useEffect(() => {
+    if (prevScoreRef.current < LEVEL_UP_SCORE && score >= LEVEL_UP_SCORE) {
+      setShowLevelUp(true);
+      setTimeout(() => setShowLevelUp(false), 2000);
+    }
+    prevScoreRef.current = score;
+  }, [score]);
+
+  // 게임 리셋 시 레벨업 상태도 리셋
+  useEffect(() => {
+    if (phase === 'idle') {
+      setShowLevelUp(false);
+      prevScoreRef.current = 0;
+    }
+  }, [phase]);
 
   // 클리어될 픽셀 Set (빠른 조회용)
   const clearingSet = useMemo(() => {
@@ -321,7 +345,7 @@ export function SandTetrisGame() {
         <div className="text-sm text-gray-500 text-center space-y-2 px-8">
           <p className="text-gray-400 mb-4">Connect same colors from left to right!</p>
           <div className="flex justify-center gap-2 mb-4">
-            {BLOCK_COLORS.map((color, i) => (
+            {BLOCK_COLORS.slice(0, 4).map((color, i) => (
               <div
                 key={i}
                 className="w-6 h-6 rounded"
@@ -379,6 +403,22 @@ export function SandTetrisGame() {
           </div>
         )}
 
+        {/* 레벨업 애니메이션 */}
+        {showLevelUp && (
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
+            <div className="flex flex-col items-center animate-bounce">
+              <p className="text-2xl font-bold text-white mb-2">LEVEL UP!</p>
+              <div className="flex items-center gap-2 bg-black/70 px-4 py-2 rounded-lg">
+                <span className="text-white text-sm">New Color:</span>
+                <div
+                  className="w-6 h-6 rounded animate-pulse"
+                  style={{ backgroundColor: BLOCK_COLORS[4] }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 터치 가이드 (반투명) */}
         {phase === 'playing' && (
           <div className="absolute inset-0 pointer-events-none flex flex-col opacity-20 rounded-xl overflow-hidden">
@@ -395,12 +435,14 @@ export function SandTetrisGame() {
         )}
       </div>
 
-      {/* 색상 가이드 */}
+      {/* 색상 가이드 (점수에 따라 동적으로 표시) */}
       <div className="flex gap-1">
-        {BLOCK_COLORS.map((color, i) => (
+        {BLOCK_COLORS.slice(0, colorCount).map((color, i) => (
           <div
             key={i}
-            className="w-4 h-4 rounded-sm"
+            className={`w-4 h-4 rounded-sm transition-all duration-300 ${
+              i === 4 ? 'animate-pulse ring-2 ring-white/50' : ''
+            }`}
             style={{ backgroundColor: color, opacity: 0.7 }}
           />
         ))}
