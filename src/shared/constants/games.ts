@@ -2,6 +2,15 @@ import { GameMeta } from '../types';
 
 export const GAMES: GameMeta[] = [
   {
+    id: 'sand-tetris',
+    name: 'Sand Tetris',
+    description: 'Tetris with sand physics',
+    icon: '🧱',
+    path: '/games/sand-tetris',
+    color: '#D97706',
+    estimatedTime: '3m',
+  },
+  {
     id: 'reaction-speed',
     name: 'Reaction',
     description: 'Test your reflexes',
@@ -18,14 +27,5 @@ export const GAMES: GameMeta[] = [
     path: '/games/aim-trainer',
     color: '#EF4444',
     estimatedTime: '30s',
-  },
-  {
-    id: 'sand-tetris',
-    name: 'Sand Tetris',
-    description: 'Tetris with sand physics',
-    icon: '🧱',
-    path: '/games/sand-tetris',
-    color: '#D97706',
-    estimatedTime: '3m',
   },
 ];

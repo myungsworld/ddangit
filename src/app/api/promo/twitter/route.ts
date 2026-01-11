@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSocialAdapter } from '@/infrastructure/social';
-import { generateMessage } from '@/infrastructure/social/templates';
+import { generateMessage, MessageType } from '@/infrastructure/social/templates';
 
 // GET /api/promo/twitter - Cron 또는 상태 확인
 export async function GET(request: NextRequest) {
@@ -10,7 +10,9 @@ export async function GET(request: NextRequest) {
   if (isCron) {
     console.log('[Promo][Twitter] Cron triggered at', new Date().toISOString());
 
-    const message = generateMessage({ type: 'general' });
+    // 50% 확률로 게임별 홍보 vs 일반 홍보
+    const type: MessageType = Math.random() > 0.5 ? 'game_specific' : 'general';
+    const message = generateMessage({ type });
     const result = await adapter.post({ text: message });
 
     console.log(`[Promo][Twitter] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
@@ -34,13 +36,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
-    const { type = 'general', customMessage } = body as {
-      type?: 'general' | 'new_game' | 'update' | 'ranking';
+    const { type = 'general', customMessage, gameId } = body as {
+      type?: MessageType;
       customMessage?: string;
+      gameId?: string;
     };
 
     const adapter = getSocialAdapter('twitter');
-    const message = customMessage || generateMessage({ type });
+    const message = customMessage || generateMessage({ type, gameId });
     const result = await adapter.post({ text: message });
 
     console.log(`[Promo][Twitter] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
