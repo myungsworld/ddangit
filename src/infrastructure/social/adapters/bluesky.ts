@@ -14,27 +14,30 @@ export class BlueskyAdapter implements SocialAdapter {
     );
   }
 
-  private async createSession(): Promise<{ accessJwt: string; did: string } | null> {
+  private async createSession(): Promise<{ accessJwt: string; did: string; error?: string } | null> {
     try {
+      const identifier = process.env.BLUESKY_IDENTIFIER;
+      const password = process.env.BLUESKY_PASSWORD;
+
+      console.log(`[Bluesky] Creating session for: ${identifier}`);
+
       const response = await fetch(`${BLUESKY_API_URL}/com.atproto.server.createSession`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          identifier: process.env.BLUESKY_IDENTIFIER,
-          password: process.env.BLUESKY_PASSWORD,
-        }),
+        body: JSON.stringify({ identifier, password }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        console.error('[Bluesky] Session creation failed:', await response.text());
-        return null;
+        console.error('[Bluesky] Session creation failed:', JSON.stringify(data));
+        return { accessJwt: '', did: '', error: JSON.stringify(data) };
       }
 
-      const data = await response.json();
       return { accessJwt: data.accessJwt, did: data.did };
     } catch (error) {
       console.error('[Bluesky] Session error:', error);
-      return null;
+      return { accessJwt: '', did: '', error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -53,12 +56,13 @@ export class BlueskyAdapter implements SocialAdapter {
     try {
       // 세션 생성
       const session = await this.createSession();
-      if (!session) {
+      if (!session || !session.accessJwt) {
         return {
           platform: 'bluesky',
           status: 'failed',
           message: 'Failed to create session',
           timestamp,
+          error: session?.error || 'Unknown error',
         };
       }
 
