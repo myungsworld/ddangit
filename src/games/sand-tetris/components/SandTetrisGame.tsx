@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { useSandTetris } from '../hooks/useSandTetris';
-import { GAME_CONFIG, BLOCK_COLORS, getColorCount, LEVEL_UP_SCORE } from '../constants';
+import { GAME_CONFIG, BLOCK_COLORS, getColorCount, getLevelIndex, LEVELS } from '../constants';
 import { GameResult } from '@/shared/components/game';
 
 const { GRID_WIDTH, GRID_HEIGHT, BLOCK_SIZE, DANGER_ZONE_RATIO } = GAME_CONFIG;
@@ -31,25 +31,30 @@ export function SandTetrisGame() {
 
   // 레벨업 애니메이션 상태
   const [showLevelUp, setShowLevelUp] = useState(false);
-  const prevScoreRef = useRef(0);
+  const [newColorIndex, setNewColorIndex] = useState<number | null>(null);
+  const prevLevelRef = useRef(0);
 
-  // 현재 사용 가능한 색상 수
+  // 현재 레벨과 색상 수
+  const currentLevel = getLevelIndex(score);
   const colorCount = getColorCount(score);
 
-  // 10000점 달성 시 레벨업 애니메이션
+  // 레벨업 시 애니메이션
   useEffect(() => {
-    if (prevScoreRef.current < LEVEL_UP_SCORE && score >= LEVEL_UP_SCORE) {
+    if (currentLevel > prevLevelRef.current && prevLevelRef.current >= 0) {
+      const newColor = LEVELS[currentLevel].colorCount - 1; // 새로 추가된 색상 인덱스
+      setNewColorIndex(newColor);
       setShowLevelUp(true);
       setTimeout(() => setShowLevelUp(false), 2000);
     }
-    prevScoreRef.current = score;
-  }, [score]);
+    prevLevelRef.current = currentLevel;
+  }, [currentLevel]);
 
   // 게임 리셋 시 레벨업 상태도 리셋
   useEffect(() => {
     if (phase === 'idle') {
       setShowLevelUp(false);
-      prevScoreRef.current = 0;
+      setNewColorIndex(null);
+      prevLevelRef.current = 0;
     }
   }, [phase]);
 
@@ -345,7 +350,7 @@ export function SandTetrisGame() {
         <div className="text-sm text-gray-500 text-center space-y-2 px-8">
           <p className="text-gray-400 mb-4">Connect same colors from left to right!</p>
           <div className="flex justify-center gap-2 mb-4">
-            {BLOCK_COLORS.slice(0, 4).map((color, i) => (
+            {BLOCK_COLORS.slice(0, LEVELS[0].colorCount).map((color, i) => (
               <div
                 key={i}
                 className="w-6 h-6 rounded"
@@ -404,7 +409,7 @@ export function SandTetrisGame() {
         )}
 
         {/* 레벨업 애니메이션 */}
-        {showLevelUp && (
+        {showLevelUp && newColorIndex !== null && (
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
             <div className="flex flex-col items-center animate-bounce">
               <p className="text-2xl font-bold text-white mb-2">LEVEL UP!</p>
@@ -412,7 +417,7 @@ export function SandTetrisGame() {
                 <span className="text-white text-sm">New Color:</span>
                 <div
                   className="w-6 h-6 rounded animate-pulse"
-                  style={{ backgroundColor: BLOCK_COLORS[4] }}
+                  style={{ backgroundColor: BLOCK_COLORS[newColorIndex] }}
                 />
               </div>
             </div>

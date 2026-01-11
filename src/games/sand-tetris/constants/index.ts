@@ -17,8 +17,8 @@ export const GAME_CONFIG = {
   DROP_INTERVAL: 400, // 블록 떨어지는 간격 (ms)
   SAND_UPDATE_INTERVAL: 20, // 모래 물리 업데이트 간격 (ms)
 
-  // 위험선 (상단 20%)
-  DANGER_ZONE_RATIO: 0.2,
+  // 위험선 (상단 5%)
+  DANGER_ZONE_RATIO: 0.05,
 
   // 점수 계산
   SCORE_DIVISOR: 1, // 클리어된 픽셀 / N = 점수
@@ -60,21 +60,43 @@ export const BLOCK_SHAPES: BlockShape[] = [
   ],
 ];
 
-// 기본 4가지 색상 + 추가 색상
+// 모든 색상 (레벨에 따라 순차적으로 해금)
 export const BLOCK_COLORS = [
   "#FF4757", // 빨강
   "#FFA502", // 주황
   "#2ED573", // 초록
   "#3742FA", // 파랑
-  "#A55EEA", // 보라 (레벨업 시 추가)
+  "#A55EEA", // 보라
 ];
 
-// 레벨업 점수 기준
-export const LEVEL_UP_SCORE = 1000;
+// 레벨 설정 (확장 가능)
+export interface LevelConfig {
+  minScore: number; // 이 레벨에 도달하는 최소 점수
+  colorCount: number; // 사용 가능한 색상 수
+}
+
+export const LEVELS: LevelConfig[] = [
+  { minScore: 0, colorCount: 3 }, // 시작: 3색
+  { minScore: 5000, colorCount: 4 }, // x점: 4색
+  { minScore: 20000, colorCount: 5 }, // x점: 5색
+];
+
+// 현재 레벨 인덱스 계산
+export function getLevelIndex(score: number): number {
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (score >= LEVELS[i].minScore) return i;
+  }
+  return 0;
+}
+
+// 현재 레벨 설정 가져오기
+export function getLevel(score: number): LevelConfig {
+  return LEVELS[getLevelIndex(score)];
+}
 
 // 점수에 따른 사용 가능한 색상 수
 export function getColorCount(score: number): number {
-  return score >= LEVEL_UP_SCORE ? 5 : 4;
+  return getLevel(score).colorCount;
 }
 
 // 랜덤 블록 생성 (점수에 따라 색상 수 결정)
@@ -84,7 +106,7 @@ export function getRandomBlock(score: number = 0): {
 } {
   const shapeIndex = Math.floor(Math.random() * BLOCK_SHAPES.length);
   const colorCount = getColorCount(score);
-  const colorIndex = Math.floor(Math.random() * colorCount) + 1; // 1~ (0은 빈 공간)
+  const colorIndex = Math.floor(Math.random() * colorCount) + 1;
   return {
     shape: BLOCK_SHAPES[shapeIndex],
     colorIndex,
