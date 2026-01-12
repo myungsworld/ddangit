@@ -34,6 +34,9 @@ export const metadata: Metadata = {
     title: 'ddangit | Quick Games',
     description: 'Simple mini-games to kill time. Test your reaction speed, aim, and more!',
   },
+  verification: {
+    google: 'a1mEHTJIe7eooBRMVKtWRRoIzriyTxtfQ3XI8VcztXw',
+  },
   other: {
     "google-adsense-account": "ca-pub-6250352377526864",
   },
