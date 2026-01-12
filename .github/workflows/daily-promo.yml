@@ -25,3 +25,20 @@ jobs:
             echo "❌ Promo failed"
             exit 1
           fi
+
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: promo
+    if: failure()
+    steps:
+      - name: Send failure notification
+        run: |
+          curl -X POST "https://api.resend.com/emails" \
+            -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "from": "ddangit <noreply@ddangit.vercel.app>",
+              "to": ["${{ secrets.NOTIFICATION_EMAIL }}"],
+              "subject": "❌ Daily Promo Failed - ddangit",
+              "html": "<h2>홍보 발송 실패</h2><p>Daily Promo가 실패했습니다.</p><p><a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">로그 확인하기</a></p>"
+            }'

@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch: # 수동 실행 가능
 
+env:
+  SITE_URL: https://ddangit.vercel.app
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -39,3 +42,20 @@ jobs:
           done < /tmp/vercel_urls.txt
           rm -f /tmp/vercel_urls.txt
           echo "Done!"
+
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: failure()
+    steps:
+      - name: Send failure notification
+        run: |
+          curl -X POST "https://api.resend.com/emails" \
+            -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "from": "ddangit <noreply@ddangit.vercel.app>",
+              "to": ["${{ secrets.NOTIFICATION_EMAIL }}"],
+              "subject": "❌ Deploy Failed - ddangit",
+              "html": "<h2>배포 실패</h2><p>GitHub Actions 배포가 실패했습니다.</p><p><a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">로그 확인하기</a></p><p>Commit: ${{ github.sha }}</p>"
+            }'
