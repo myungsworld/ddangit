@@ -19,6 +19,18 @@
 - [x] 이메일 알림 (Resend API)
 - [x] 성공/실패 결과 발송
 
+## 진행 중
+
+### Threads
+- [x] Meta Developer App 생성 (ddangit)
+- [x] App ID / App Secret 발급
+- [ ] Access Token 발급 (계정 정지로 대기 중)
+- [ ] ThreadsAdapter 구현
+
+> **Note**: Threads 계정이 suspended 상태라 토큰 발급 불가. 계정 복구 후 진행 예정.
+
+---
+
 ## TODO
 
 ### 플랫폼 추가
@@ -28,7 +40,7 @@
 | Discord | Webhook 방식, 게임 커뮤니티 타겟 | [ ] |
 | Reddit | r/WebGames 등, 수동 권장 | [ ] |
 | Product Hunt | 런칭용 일회성 | [ ] |
-| Threads | Instagram 연동 | [ ] |
+| Threads | Meta API 설정 완료, 계정 정지로 대기 중 | [~] |
 
 ### 기능 개선
 
