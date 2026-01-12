@@ -1,0 +1,41 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        run: |
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+          echo "✅ Deployment complete!"
+
+      - name: Cleanup Old Deployments
+        run: |
+          echo "Cleaning up old deployments (keeping latest 5)..."
+          vercel ls --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | grep 'https://' | tail -n +6 | awk '{print $2}' > /tmp/vercel_urls.txt
+          while read url; do
+            if [ -n "$url" ]; then
+              echo "Removing: $url"
+              vercel rm "$url" --token=${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || true
+            fi
+          done < /tmp/vercel_urls.txt
+          rm -f /tmp/vercel_urls.txt
+          echo "Done!"
