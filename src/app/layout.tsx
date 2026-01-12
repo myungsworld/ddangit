@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'a1mEHTJIe7eooBRMVKtWRRoIzriyTxtfQ3XI8VcztXw',
+    other: {
+      'naver-site-verification': 'ae702af6a621f4e1704fd0f0f7ef38fa71402956',
+    },
   },
   other: {
     "google-adsense-account": "ca-pub-6250352377526864",
