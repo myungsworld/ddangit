@@ -9,16 +9,27 @@ const BASE_URL = 'https://ddangit.vercel.app';
 export type MessageType = 'general' | 'new_game' | 'update' | 'ranking';
 export type Language = 'ko' | 'en';
 
+export type Platform = 'twitter' | 'bluesky';
+
 interface MessageContext {
   type: MessageType;
   ranking?: RankingEntry[];
   lang?: Language;
   includeHashtags?: boolean; // 해시태그 포함 여부 (기본: true)
+  platform?: Platform; // 플랫폼별 메시지 길이 조절
 }
 
-// 게임 목록 동적 생성 (개행 + 링크 포함)
+// 게임 목록 동적 생성 (개행 + 링크 포함) + 마지막에 메인 링크
 function getGameListText(): string {
-  return GAMES.map(g => `${g.icon} ${g.name}\n👉 ${BASE_URL}${g.path}`).join('\n\n');
+  const gameList = GAMES.map(g => `${g.icon} ${g.name}\n👉 ${BASE_URL}${g.path}`).join('\n\n');
+  // 마지막에 메인 링크 추가 (트위터 카드가 메인 페이지를 보여주도록)
+  return `${gameList}\n\n🏠 All Games\n👉 ${BASE_URL}`;
+}
+
+// Bluesky용 짧은 게임 목록 (300자 제한)
+function getGameListTextShort(): string {
+  const gameNames = GAMES.map(g => `${g.icon} ${g.name}`).join(' • ');
+  return `${gameNames}\n\n👉 ${BASE_URL}`;
 }
 
 // 메시지 템플릿 풀 (한국어)
@@ -100,9 +111,12 @@ export function generateMessage(context: MessageContext): string {
 
   let template = pickRandomTemplate(context.type, lang);
 
-  // 게임 목록 치환
+  // 게임 목록 치환 (플랫폼에 따라 길이 조절)
   if (template.includes('{games}')) {
-    template = template.replace('{games}', getGameListText());
+    const gameText = context.platform === 'bluesky'
+      ? getGameListTextShort()
+      : getGameListText();
+    template = template.replace('{games}', gameText);
   }
 
   // 랭킹 치환
@@ -110,8 +124,8 @@ export function generateMessage(context: MessageContext): string {
     template = template.replace('{ranking}', formatRanking(context.ranking, lang));
   }
 
-  // 해시태그 추가 (기본: true)
-  if (context.includeHashtags !== false) {
+  // 해시태그 추가 (기본: true, Bluesky는 제외 - 글자수 절약)
+  if (context.includeHashtags !== false && context.platform !== 'bluesky') {
     const hashtags = pickRandomHashtags(3, lang);
     template = `${template}\n\n${hashtags.join(' ')}`;
   }

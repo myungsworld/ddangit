@@ -16,6 +16,11 @@ export interface GameMeta {
   path: string;
   color: string;
   estimatedTime: string; // e.g., "30초", "1분"
+  // SEO 메타데이터 (영어 기본값 - 페이지에서 사용)
+  seo: {
+    title: string;
+    description: string;
+  };
 }
 
 export interface GameState<T = unknown> {

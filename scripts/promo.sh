@@ -21,6 +21,17 @@ if [ "$ENV" = "local" ]; then
   BASE_URL="http://localhost:3000"
 elif [ "$ENV" = "prod" ]; then
   BASE_URL="https://ddangit.vercel.app"
+
+  # .env.local에서 API 키 로드
+  if [ -f .env.local ]; then
+    export $(grep -v '^#' .env.local | grep PROMO_API_KEY | xargs 2>/dev/null)
+  fi
+
+  if [ -z "$PROMO_API_KEY" ]; then
+    echo -e "${RED}❌ PROMO_API_KEY not found${NC}"
+    echo "Set it in .env.local or export PROMO_API_KEY=your_key"
+    exit 1
+  fi
 else
   echo -e "${RED}❌ Unknown environment: $ENV${NC}"
   echo "Usage: ./scripts/promo.sh [local|prod] [platform]"
@@ -28,23 +39,37 @@ else
 fi
 
 # API 호출
+ENDPOINT="/api/promo/all"
+URL="${BASE_URL}${ENDPOINT}"
+
+# 플랫폼별 JSON body 설정
 if [ "$PLATFORM" = "all" ]; then
-  ENDPOINT="/api/promo/all"
+  BODY='{"platforms":["twitter","bluesky"]}'
 elif [ "$PLATFORM" = "twitter" ]; then
-  ENDPOINT="/api/promo/twitter"
+  BODY='{"platforms":["twitter"]}'
+elif [ "$PLATFORM" = "bluesky" ]; then
+  BODY='{"platforms":["bluesky"]}'
 else
   echo -e "${RED}❌ Unknown platform: $PLATFORM${NC}"
-  echo "Available: all, twitter"
+  echo "Available: all, twitter, bluesky"
   exit 1
 fi
 
-URL="${BASE_URL}${ENDPOINT}"
 echo "Calling: POST $URL"
+echo "Body: $BODY"
 echo ""
 
-RESPONSE=$(curl -s -X POST "$URL" \
-  -H "Content-Type: application/json" \
-  -d '{}')
+# 프로덕션이면 API 키 헤더 추가
+if [ "$ENV" = "prod" ]; then
+  RESPONSE=$(curl -s -X POST "$URL" \
+    -H "Content-Type: application/json" \
+    -H "x-api-key: $PROMO_API_KEY" \
+    -d "$BODY")
+else
+  RESPONSE=$(curl -s -X POST "$URL" \
+    -H "Content-Type: application/json" \
+    -d "$BODY")
+fi
 
 # 결과 출력
 echo "Response:"

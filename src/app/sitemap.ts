@@ -1,24 +1,18 @@
 import { MetadataRoute } from 'next';
+import { GAMES } from '@/shared/constants';
+
+const BASE_URL = 'https://ddangit.vercel.app';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://ddangit.vercel.app';
-
-  const games = [
-    'reaction-speed',
-    'aim-trainer',
-    'sand-tetris',
-    'block-blast',
-  ];
-
   return [
     {
-      url: baseUrl,
+      url: BASE_URL,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
-    ...games.map((game) => ({
-      url: `${baseUrl}/games/${game}`,
+    ...GAMES.map((game) => ({
+      url: `${BASE_URL}${game.path}`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.8,

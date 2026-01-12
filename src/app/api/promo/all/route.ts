@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   try {
     const twitter = getSocialAdapter('twitter');
     if (twitter.isConfigured()) {
-      const message = generateMessage({ type: 'general' });
+      const message = generateMessage({ type: 'general', platform: 'twitter' });
       const result = await twitter.post({ text: message });
       results.push(result);
       console.log(`[Promo][Twitter] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
@@ -53,11 +53,11 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // Bluesky 발송 (영어 전용)
+  // Bluesky 발송 (영어 전용, 짧은 메시지)
   try {
     const bluesky = getSocialAdapter('bluesky');
     if (bluesky.isConfigured()) {
-      const message = generateMessage({ type: 'general', lang: 'en' });
+      const message = generateMessage({ type: 'general', lang: 'en', platform: 'bluesky' });
       const result = await bluesky.post({ text: message });
       results.push(result);
       console.log(`[Promo][Bluesky] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
@@ -123,9 +123,9 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        // Bluesky는 영어, Twitter는 랜덤
+        // Bluesky는 영어 + 짧은 메시지, Twitter는 랜덤
         const lang = platform === 'bluesky' ? 'en' : undefined;
-        const message = generateMessage({ type: 'general', lang });
+        const message = generateMessage({ type: 'general', lang, platform });
         const result = await adapter.post({ text: message });
         results.push(result);
 

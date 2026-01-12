@@ -1,26 +1,15 @@
-import { Metadata } from 'next';
 import { GameLayout } from '@/shared/components/game';
 import { AimGame } from '@/games/aim-trainer';
-import { GAME_CONFIG } from '@/games/aim-trainer/constants';
+import { generateGameMetadata, getGameById } from '@/shared/constants';
 
-export const metadata: Metadata = {
-  title: 'Aim Trainer | ddangit',
-  description: 'Test your aim! Hit targets as fast as you can.',
-  openGraph: {
-    title: 'Aim Trainer | ddangit',
-    description: 'Test your aim! Hit targets as fast as you can.',
-    url: '/games/aim-trainer',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Aim Trainer | ddangit',
-    description: 'Test your aim! Hit targets as fast as you can.',
-  },
-};
+const GAME_ID = 'aim-trainer';
+const game = getGameById(GAME_ID)!;
+
+export const metadata = generateGameMetadata(GAME_ID);
 
 export default function AimTrainerPage() {
   return (
-    <GameLayout gameId={GAME_CONFIG.id} color={GAME_CONFIG.color}>
+    <GameLayout gameId={game.id} color={game.color}>
       <div className="w-full max-w-lg mx-auto">
         <AimGame />
       </div>
