@@ -1,0 +1,27 @@
+name: Daily Promo
+
+on:
+  schedule:
+    # 매일 오전 9시 UTC (한국시간 오후 6시)
+    - cron: '0 9 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  promo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send promo to all platforms
+        run: |
+          response=$(curl -s -X POST "https://ddangit.vercel.app/api/promo/all" \
+            -H "Content-Type: application/json" \
+            -H "x-api-key: ${{ secrets.PROMO_API_KEY }}")
+
+          echo "Response: $response"
+
+          # Check if success
+          if echo "$response" | grep -q '"success":true'; then
+            echo "✅ Promo sent successfully!"
+          else
+            echo "❌ Promo failed"
+            exit 1
+          fi

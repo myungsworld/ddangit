@@ -10,6 +10,11 @@ const adapters: Record<Platform, () => SocialAdapter> = {
   bluesky: () => new BlueskyAdapter(),
 };
 
+// 모든 플랫폼 목록 가져오기
+export function getAllPlatforms(): Platform[] {
+  return Object.keys(adapters) as Platform[];
+}
+
 // 단일 플랫폼 가져오기
 export function getSocialAdapter(platform: Platform): SocialAdapter {
   const factory = adapters[platform];

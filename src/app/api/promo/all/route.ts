@@ -1,83 +1,77 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSocialAdapter, PostResult } from '@/infrastructure/social';
+import { getSocialAdapter, getAllPlatforms, PostResult, Platform } from '@/infrastructure/social';
 import { generateMessage } from '@/infrastructure/social/templates';
 import { sendPromoResultEmail } from '@/infrastructure/notification/email';
 import { isAuthorized } from '@/infrastructure/social/auth';
 
+// 플랫폼별 메시지 생성 옵션
+function getMessageOptions(platform: Platform) {
+  // Bluesky는 영어 전용, 짧은 메시지
+  if (platform === 'bluesky') {
+    return { type: 'general' as const, lang: 'en' as const, platform };
+  }
+  // 기본: 랜덤 언어
+  return { type: 'general' as const, platform };
+}
+
+// 모든 플랫폼에 발송하는 공통 로직
+async function postToAllPlatforms(platforms: Platform[]): Promise<PostResult[]> {
+  const results: PostResult[] = [];
+
+  for (const platform of platforms) {
+    try {
+      const adapter = getSocialAdapter(platform);
+
+      if (!adapter.isConfigured()) {
+        results.push({
+          platform,
+          status: 'skipped',
+          message: 'Not configured',
+          timestamp: new Date().toISOString(),
+        });
+        continue;
+      }
+
+      const message = generateMessage(getMessageOptions(platform));
+      const result = await adapter.post({ text: message });
+      results.push(result);
+      console.log(`[Promo][${platform}] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
+    } catch (error) {
+      results.push({
+        platform,
+        status: 'failed',
+        message: 'Unexpected error',
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  return results;
+}
+
 // GET /api/promo/all - Cron 전용 (모든 플랫폼에 발송)
 export async function GET(request: NextRequest) {
   const isCron = request.headers.get('x-vercel-cron') === '1';
+  const allPlatforms = getAllPlatforms();
 
   if (!isCron) {
     // Cron이 아니면 상태만 반환
-    const twitter = getSocialAdapter('twitter');
-    const bluesky = getSocialAdapter('bluesky');
+    const platformStatus: Record<string, boolean> = {};
+    for (const platform of allPlatforms) {
+      platformStatus[platform] = getSocialAdapter(platform).isConfigured();
+    }
 
     return NextResponse.json({
       status: 'ok',
-      platforms: {
-        twitter: twitter.isConfigured(),
-        bluesky: bluesky.isConfigured(),
-      },
-      schedule: 'Daily at 09:00 UTC',
+      platforms: platformStatus,
+      schedule: 'Daily at 09:00 UTC (GitHub Actions)',
     });
   }
 
   console.log('[Promo][All] Cron triggered at', new Date().toISOString());
 
-  const results: PostResult[] = [];
-
-  // Twitter 발송 (한국어/영어 랜덤)
-  try {
-    const twitter = getSocialAdapter('twitter');
-    if (twitter.isConfigured()) {
-      const message = generateMessage({ type: 'general', platform: 'twitter' });
-      const result = await twitter.post({ text: message });
-      results.push(result);
-      console.log(`[Promo][Twitter] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
-    } else {
-      results.push({
-        platform: 'twitter',
-        status: 'skipped',
-        message: 'Not configured',
-        timestamp: new Date().toISOString(),
-      });
-    }
-  } catch (error) {
-    results.push({
-      platform: 'twitter',
-      status: 'failed',
-      message: 'Unexpected error',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-
-  // Bluesky 발송 (영어 전용, 짧은 메시지)
-  try {
-    const bluesky = getSocialAdapter('bluesky');
-    if (bluesky.isConfigured()) {
-      const message = generateMessage({ type: 'general', lang: 'en', platform: 'bluesky' });
-      const result = await bluesky.post({ text: message });
-      results.push(result);
-      console.log(`[Promo][Bluesky] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
-    } else {
-      results.push({
-        platform: 'bluesky',
-        status: 'skipped',
-        message: 'Not configured',
-        timestamp: new Date().toISOString(),
-      });
-    }
-  } catch (error) {
-    results.push({
-      platform: 'bluesky',
-      status: 'failed',
-      message: 'Unexpected error',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
+  const results = await postToAllPlatforms(allPlatforms);
 
   // 실패 시 이메일 알림
   await sendPromoResultEmail(results);
@@ -103,43 +97,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { platforms = ['twitter', 'bluesky'] } = body as {
-      platforms?: ('twitter' | 'bluesky')[];
-    };
+    // platforms가 없으면 모든 플랫폼에 발송
+    const { platforms } = body as { platforms?: Platform[] };
+    const targetPlatforms = platforms ?? getAllPlatforms();
 
-    const results: PostResult[] = [];
-
-    for (const platform of platforms) {
-      try {
-        const adapter = getSocialAdapter(platform);
-
-        if (!adapter.isConfigured()) {
-          results.push({
-            platform,
-            status: 'skipped',
-            message: `${platform} not configured`,
-            timestamp: new Date().toISOString(),
-          });
-          continue;
-        }
-
-        // Bluesky는 영어 + 짧은 메시지, Twitter는 랜덤
-        const lang = platform === 'bluesky' ? 'en' : undefined;
-        const message = generateMessage({ type: 'general', lang, platform });
-        const result = await adapter.post({ text: message });
-        results.push(result);
-
-        console.log(`[Promo][${platform}] ${result.status === 'success' ? '✅' : '❌'} ${result.message}`);
-      } catch (error) {
-        results.push({
-          platform,
-          status: 'failed',
-          message: 'Unexpected error',
-          timestamp: new Date().toISOString(),
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
-    }
+    const results = await postToAllPlatforms(targetPlatforms);
 
     // 실패 시 이메일 알림
     await sendPromoResultEmail(results);
