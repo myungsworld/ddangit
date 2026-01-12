@@ -66,6 +66,19 @@ export const GAMES: GameMeta[] = [
       description: 'Tap same colors for 2x combos! Level up to unlock new colors.',
     },
   },
+  {
+    id: 'tariff-dodge',
+    name: 'Tariff Dodge',
+    description: 'Dodge the tariffs',
+    icon: '📦',
+    path: '/games/tariff-dodge',
+    color: '#DC2626',
+    estimatedTime: '30s',
+    seo: {
+      title: 'Tariff Dodge | ddangit',
+      description: 'Dodge falling tariffs! How long can you survive?',
+    },
+  },
 ];
 
 // 유틸리티 함수

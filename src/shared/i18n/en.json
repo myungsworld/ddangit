@@ -96,6 +96,22 @@
         "slow": "Still Learning",
         "verySlow": "Just Warming Up"
       }
+    },
+    "tariff-dodge": {
+      "name": "Tariff Dodge",
+      "description": "Dodge falling tariffs from the sky!\nSurvive as long as you can",
+      "survived": "Survived",
+      "hitBy": "tariff hit",
+      "controls": "Move mouse or touch to control",
+      "ranks": {
+        "godlike": "Free Trade Hero",
+        "insane": "Tariff Ninja",
+        "fast": "Export Champion",
+        "good": "Trade Expert",
+        "average": "Just Trading",
+        "slow": "Rookie Exporter",
+        "verySlow": "Bankrupted"
+      }
     }
   }
 }

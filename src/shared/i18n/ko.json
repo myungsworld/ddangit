@@ -96,6 +96,22 @@
         "slow": "아직 연습 중",
         "verySlow": "워밍업 중"
       }
+    },
+    "tariff-dodge": {
+      "name": "관세피하기",
+      "description": "하늘에서 쏟아지는 관세를 피하라!\n오래 버틸수록 높은 점수",
+      "survived": "생존",
+      "hitBy": "관세 피격",
+      "controls": "마우스 또는 터치로 이동",
+      "ranks": {
+        "godlike": "자유무역 수호자",
+        "insane": "관세 회피 달인",
+        "fast": "수출 챔피언",
+        "good": "무역 전문가",
+        "average": "그냥 무역상",
+        "slow": "초보 수출업자",
+        "verySlow": "관세 맞고 파산"
+      }
     }
   }
 }
