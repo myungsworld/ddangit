@@ -29,6 +29,9 @@ export interface GameState {
   currentQuestion: Question | null;
   options: ColorDef[]; // 선택지
   lastAnswer: 'correct' | 'wrong' | null;
+  showTimeBonus: boolean;  // 시간 보너스 표시
+  showTimePenalty: boolean; // 시간 감소 표시
+  combo: number;       // 현재 콤보 (5연속마다 보너스)
 }
 
 // 게임 데이터 (결과 화면용)

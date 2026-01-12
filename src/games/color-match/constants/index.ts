@@ -7,6 +7,10 @@ export const GAME_CONFIG = {
   totalTime: 30, // 30초 게임
   baseScore: 10,
   streakBonus: 5, // 연속 정답 보너스
+  wrongPenalty: 5, // 오답 감점
+  timePenalty: 2, // 오답 시 시간 감소 (초)
+  timeBonus: 1, // 5연속 정답 시 시간 보너스 (초)
+  streakForBonus: 5, // 시간 보너스 받을 연속 정답 수
 };
 
 // 색상 정의

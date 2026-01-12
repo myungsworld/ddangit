@@ -64,6 +64,9 @@ function createInitialState(): GameState {
     currentQuestion: null,
     options: [],
     lastAnswer: null,
+    showTimeBonus: false,
+    showTimePenalty: false,
+    combo: 0,
   };
 }
 
@@ -108,6 +111,9 @@ export function useColorMatch() {
       currentQuestion: question,
       options,
       lastAnswer: null,
+      showTimeBonus: false,
+      showTimePenalty: false,
+      combo: 0,
     }));
 
     // 타이머 시작
@@ -141,12 +147,58 @@ export function useColorMatch() {
 
       const isCorrect = colorId === prev.currentQuestion.textColor.id;
 
+      // 스트릭 계산
       const newStreak = isCorrect ? prev.streak + 1 : 0;
       const newBestStreak = Math.max(prev.bestStreak, newStreak);
-      const scoreGain = isCorrect
-        ? GAME_CONFIG.baseScore + (prev.streak * GAME_CONFIG.streakBonus)
-        : 0;
-      const newScore = prev.score + scoreGain;
+
+      // 점수 계산: 정답이면 보너스, 오답이면 감점
+      let scoreGain = 0;
+      if (isCorrect) {
+        scoreGain = GAME_CONFIG.baseScore + (prev.streak * GAME_CONFIG.streakBonus);
+      } else {
+        scoreGain = -GAME_CONFIG.wrongPenalty;
+      }
+      const newScore = Math.max(0, prev.score + scoreGain); // 점수 최소 0
+
+      // 시간 계산: 오답이면 시간 감소, 5연속마다 시간 보너스
+      let newTime = prev.timeLeft;
+      let showTimeBonus = false;
+      let showTimePenalty = false;
+      let newCombo = prev.combo;
+
+      if (isCorrect) {
+        newCombo = prev.combo + 1;
+        // 5연속마다 시간 보너스
+        if (newCombo >= GAME_CONFIG.streakForBonus) {
+          newTime = Math.min(prev.timeLeft + GAME_CONFIG.timeBonus, GAME_CONFIG.totalTime + 10);
+          showTimeBonus = true;
+          newCombo = 0; // 콤보 리셋
+        }
+      } else {
+        // 오답 시 시간 감소
+        newTime = prev.timeLeft - GAME_CONFIG.timePenalty;
+        showTimePenalty = true;
+        newCombo = 0;
+
+        // 시간이 0 이하면 게임 오버
+        if (newTime <= 0) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+          }
+          return {
+            ...prev,
+            score: newScore,
+            timeLeft: 0,
+            phase: 'ending',
+            streak: 0,
+            bestStreak: newBestStreak,
+            lastAnswer: 'wrong',
+            showTimePenalty: true,
+            showTimeBonus: false,
+            combo: 0,
+          };
+        }
+      }
 
       // 최고 점수 업데이트
       let highScore = prev.highScore;
@@ -165,9 +217,13 @@ export function useColorMatch() {
         highScore,
         streak: newStreak,
         bestStreak: newBestStreak,
+        timeLeft: newTime,
         currentQuestion: question,
         options,
         lastAnswer: isCorrect ? 'correct' : 'wrong',
+        showTimeBonus,
+        showTimePenalty,
+        combo: newCombo,
       };
     });
   }, []);
@@ -199,6 +255,9 @@ export function useColorMatch() {
     currentQuestion: state.currentQuestion,
     options: state.options,
     lastAnswer: state.lastAnswer,
+    showTimeBonus: state.showTimeBonus,
+    showTimePenalty: state.showTimePenalty,
+    combo: state.combo,
 
     // 액션
     startGame,
