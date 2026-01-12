@@ -7,11 +7,12 @@
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── games/[game-id]/    # 게임 페이지
+│   ├── games/[gameId]/     # 동적 라우트 (모든 게임 자동 처리)
 │   ├── api/                # API 라우트
 │   ├── sitemap.ts          # 자동 생성 (GAMES 사용)
 │   └── robots.ts           # 자동 생성
 ├── games/                  # 게임별 로직
+│   ├── registry.tsx        # ⭐ 게임 컴포넌트 레지스트리
 │   └── [game-id]/
 │       ├── components/
 │       ├── hooks/
@@ -19,7 +20,7 @@ src/
 │       └── types/
 ├── shared/
 │   ├── constants/
-│   │   ├── games.ts        # ⭐ 게임 레지스트리 (Single Source of Truth)
+│   │   ├── games.ts        # ⭐ 게임 메타데이터 레지스트리
 │   │   └── metadata.ts     # SEO 메타데이터 생성
 │   ├── i18n/
 │   │   ├── ko.json         # 한국어 번역
@@ -61,27 +62,13 @@ src/
   - `types/` - 타입 정의
   - `index.ts` - 내보내기
 
-### 3. 페이지 생성 (필수)
-- [ ] `src/app/games/[game-id]/page.tsx` 생성
+### 3. 컴포넌트 레지스트리 등록 (필수)
+- [ ] `src/games/registry.tsx`에 게임 컴포넌트 등록
   ```typescript
-  import { GameLayout } from '@/shared/components/game';
-  import { NewGame } from '@/games/new-game';
-  import { generateGameMetadata, getGameById } from '@/shared/constants';
-
-  const GAME_ID = 'new-game';
-  const game = getGameById(GAME_ID)!;
-
-  export const metadata = generateGameMetadata(GAME_ID);
-
-  export default function NewGamePage() {
-    return (
-      <GameLayout gameId={game.id} color={game.color}>
-        <div className="w-full max-w-lg mx-auto">
-          <NewGame />
-        </div>
-      </GameLayout>
-    );
-  }
+  'new-game': dynamic(
+    () => import('./new-game').then((m) => ({ default: m.NewGameComponent })),
+    { ssr: false }
+  ),
   ```
 
 ### 4. 번역 추가 (필수)
@@ -111,6 +98,7 @@ src/
 - ✅ sitemap.xml
 - ✅ Twitter/Bluesky 홍보 메시지
 - ✅ SEO 메타데이터 (Open Graph, Twitter Card)
+- ✅ 게임 페이지 (동적 라우트로 자동 생성)
 
 ## 기능 추가 시 주의사항
 

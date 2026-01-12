@@ -250,19 +250,52 @@ export function BlockBlastGame() {
 
   // 준비 화면
   if (phase === 'ready') {
+    // 미리보기용 샘플 블록들
+    const sampleBlocks = [
+      { shape: [[true, true], [true, true]], color: '#EF4444' },
+      { shape: [[true, true, true]], color: '#22C55E' },
+      { shape: [[true], [true], [true]], color: '#3B82F6' },
+      { shape: [[true, false], [true, true]], color: '#F97316' },
+    ];
+
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">{t(`games.${GAME_CONFIG.id}.name`)}</h2>
-          <p className="text-gray-400 whitespace-pre-line">{t(`games.${GAME_CONFIG.id}.description`)}</p>
+      <div
+        className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center cursor-pointer rounded-2xl"
+        style={{ backgroundColor: '#1a1a2e' }}
+        onClick={startGame}
+      >
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          {t(`games.${GAME_CONFIG.id}.name`)}
+        </h1>
+        <p className="text-gray-400 mb-6 whitespace-pre-line text-center px-4">
+          {t(`games.${GAME_CONFIG.id}.description`)}
+        </p>
+
+        {/* 블록 미리보기 */}
+        <div className="flex justify-center gap-4 mb-8">
+          {sampleBlocks.map((block, blockIndex) => (
+            <div key={blockIndex} className="flex flex-col items-center">
+              {block.shape.map((row, r) => (
+                <div key={r} className="flex">
+                  {row.map((cell, c) => (
+                    <div
+                      key={c}
+                      className="border border-white/20"
+                      style={{
+                        width: 20,
+                        height: 20,
+                        backgroundColor: cell ? block.color : 'transparent',
+                        boxShadow: cell ? 'inset 2px 2px 4px rgba(255,255,255,0.3), inset -2px -2px 4px rgba(0,0,0,0.3)' : 'none',
+                      }}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
-        <button
-          onClick={startGame}
-          className="px-8 py-4 text-xl font-bold text-white rounded-lg transition-transform hover:scale-105"
-          style={{ backgroundColor: GAME_CONFIG.color }}
-        >
-          {t('common.start')}
-        </button>
+
+        <p className="text-xl text-white/80">{t('common.tapToStart')}</p>
       </div>
     );
   }

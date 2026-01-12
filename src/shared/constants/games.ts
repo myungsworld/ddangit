@@ -3,14 +3,16 @@ import { GameMeta } from '../types';
 /**
  * 게임 레지스트리 - Single Source of Truth
  *
- * 새 게임 추가 시 여기에만 등록하면 자동으로:
+ * 새 게임 추가 시 여기 + registry.tsx에 등록하면 자동으로:
  * - 메인 페이지 게임 목록
  * - sitemap.xml
  * - 홍보 메시지 (Twitter/Bluesky)
  * - SEO 메타데이터
+ * - 게임 페이지 (동적 라우트)
  *
  * 추가로 필요한 작업:
- * - src/app/games/[game-id]/page.tsx 생성
+ * - src/games/[game-id]/ 폴더 생성
+ * - src/games/registry.tsx에 컴포넌트 등록
  * - src/shared/i18n/ko.json, en.json 번역 추가
  */
 export const GAMES: GameMeta[] = [
@@ -81,8 +83,11 @@ export const GAMES: GameMeta[] = [
   },
 ];
 
+// O(1) 조회를 위한 Map
+const GAMES_MAP = new Map<string, GameMeta>(GAMES.map((g) => [g.id, g]));
+
 // 유틸리티 함수
 export const getGameById = (id: string): GameMeta | undefined =>
-  GAMES.find((game) => game.id === id);
+  GAMES_MAP.get(id);
 
 export const getGameIds = (): string[] => GAMES.map((game) => game.id);

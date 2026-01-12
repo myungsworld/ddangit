@@ -361,26 +361,29 @@ export function SandTetrisGame() {
 
   // 게임 플레이 화면
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div className="flex flex-col items-center gap-2 w-full h-full">
       {/* 점수 */}
-      <div className="w-full max-w-xs">
+      <div className="w-full max-w-xs shrink-0">
         <div className="text-center">
           <p className="text-gray-500 text-xs uppercase tracking-widest">{t('common.score')}</p>
-          <p className="text-3xl font-bold text-white">{formatScore(score)}</p>
+          <p className="text-2xl font-bold text-white">{formatScore(score)}</p>
         </div>
       </div>
 
       {/* 게임 영역 */}
-      <div className="relative w-full max-w-xs">
+      <div className="relative w-full max-w-xs flex-1 min-h-0 flex items-center justify-center">
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
-          className="w-full rounded-xl border border-gray-800 cursor-pointer shadow-2xl"
+          className="rounded-xl border border-gray-800 cursor-pointer shadow-2xl max-h-full"
           style={{
             touchAction: 'none',
             aspectRatio: `${GRID_WIDTH}/${GRID_HEIGHT}`,
-            boxShadow: '0 0 40px rgba(0, 0, 0, 0.5)'
+            boxShadow: '0 0 40px rgba(0, 0, 0, 0.5)',
+            width: 'auto',
+            height: '100%',
+            maxHeight: '60vh',
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -432,7 +435,7 @@ export function SandTetrisGame() {
       </div>
 
       {/* 색상 가이드 (점수에 따라 동적으로 표시) */}
-      <div className="flex gap-1">
+      <div className="flex gap-1 shrink-0">
         {BLOCK_COLORS.slice(0, colorCount).map((color, i) => (
           <div
             key={i}
