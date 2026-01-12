@@ -50,39 +50,19 @@ async function postToAllPlatforms(platforms: Platform[]): Promise<PostResult[]> 
   return results;
 }
 
-// GET /api/promo/all - Cron 전용 (모든 플랫폼에 발송)
-export async function GET(request: NextRequest) {
-  const isCron = request.headers.get('x-vercel-cron') === '1';
+// GET /api/promo/all - 상태 확인용
+export async function GET() {
   const allPlatforms = getAllPlatforms();
+  const platformStatus: Record<string, boolean> = {};
 
-  if (!isCron) {
-    // Cron이 아니면 상태만 반환
-    const platformStatus: Record<string, boolean> = {};
-    for (const platform of allPlatforms) {
-      platformStatus[platform] = getSocialAdapter(platform).isConfigured();
-    }
-
-    return NextResponse.json({
-      status: 'ok',
-      platforms: platformStatus,
-      schedule: 'Daily at 09:00 UTC (GitHub Actions)',
-    });
+  for (const platform of allPlatforms) {
+    platformStatus[platform] = getSocialAdapter(platform).isConfigured();
   }
 
-  console.log('[Promo][All] Cron triggered at', new Date().toISOString());
-
-  const results = await postToAllPlatforms(allPlatforms);
-
-  // 실패 시 이메일 알림
-  await sendPromoResultEmail(results);
-
-  const successCount = results.filter(r => r.status === 'success').length;
-  const failedCount = results.filter(r => r.status === 'failed').length;
-
   return NextResponse.json({
-    success: failedCount === 0,
-    summary: `${successCount} succeeded, ${failedCount} failed`,
-    results,
+    status: 'ok',
+    platforms: platformStatus,
+    schedule: 'Daily at 09:00 UTC (GitHub Actions)',
   });
 }
 
