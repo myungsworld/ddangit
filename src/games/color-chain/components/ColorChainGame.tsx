@@ -1,7 +1,7 @@
 'use client';
 
 import { useColorChain } from '../hooks/useColorChain';
-import { GAME_CONFIG, getRankKey, COLORS } from '../constants';
+import { GAME_CONFIG, getRankKey, getColorsForLevel } from '../constants';
 import { GameResult } from '@/shared/components/game';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 import { Circle } from '../types';
@@ -16,6 +16,8 @@ export function ColorChainGame() {
     circles,
     timeLeft,
     penalty,
+    level,
+    levelUpMessage,
     startGame,
     handleCircleClick,
     reset,
@@ -47,9 +49,10 @@ export function ColorChainGame() {
   }
 
   if (phase === 'waiting') {
+    const initialColors = getColorsForLevel(0);
     return (
       <div
-        className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center cursor-pointer rounded-3xl bg-amber-600"
+        className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center cursor-pointer rounded-3xl bg-amber-600 select-none"
         onClick={startGame}
       >
         <div className="text-center px-6">
@@ -60,7 +63,7 @@ export function ColorChainGame() {
             {t('games.color-chain.description')}
           </p>
           <div className="flex justify-center gap-3 mb-6">
-            {COLORS.map((color) => (
+            {initialColors.map((color) => (
               <div
                 key={color}
                 className="w-10 h-10 rounded-full"
@@ -75,35 +78,39 @@ export function ColorChainGame() {
   }
 
   return (
-    <div className="w-full h-full min-h-[60vh] flex flex-col rounded-3xl bg-gray-900 overflow-hidden">
+    <div className="w-full h-full min-h-[60vh] flex flex-col rounded-3xl bg-gray-900 overflow-hidden select-none">
       {/* Header */}
       <div className="flex justify-between items-center p-4 bg-gray-800">
         <div className="text-white">
           <span className="text-2xl font-bold">{score}</span>
-          <span className="text-gray-400 ml-2">{t('common.score')}</span>
         </div>
-        <div className="text-center">
-          {chain > 1 && (
-            <div className="text-amber-400 font-bold animate-pulse">
-              x{Math.pow(2, chain - 1)} {t('games.color-chain.chain')}
-            </div>
-          )}
-          {lastColor && (
-            <div
-              className="w-6 h-6 rounded-full mx-auto mt-1 border-2 border-white"
-              style={{ backgroundColor: lastColor }}
-            />
-          )}
+        <div className="text-center h-12 flex flex-col justify-center items-center">
+          <div className={`text-amber-400 font-bold text-sm ${chain > 1 ? 'visible' : 'invisible'}`}>
+            x{Math.pow(2, Math.max(0, chain - 1))}
+          </div>
+          <div
+            className="w-6 h-6 rounded-full border-2 border-white"
+            style={{ backgroundColor: lastColor || 'transparent', visibility: lastColor ? 'visible' : 'hidden' }}
+          />
         </div>
-        <div className="text-white text-2xl font-bold">
-          {timeLeft}s
-        </div>
+        <div className="text-white text-2xl font-bold">{timeLeft}s</div>
       </div>
+
+      {/* Level up message */}
+      {levelUpMessage && (
+        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+          <div className="bg-amber-500 text-white px-6 py-3 rounded-full text-2xl font-bold shadow-lg">
+            {levelUpMessage === 'newColor'
+              ? t('games.color-chain.newColor')
+              : t('games.color-chain.levelUp')}
+          </div>
+        </div>
+      )}
 
       {/* Penalty overlay */}
       {penalty > 0 && (
         <div className="absolute inset-0 bg-red-900/50 flex items-center justify-center z-10 rounded-3xl">
-          <span className="text-4xl font-bold text-white animate-pulse">
+          <span className="text-4xl font-bold text-white">
             {t('games.color-chain.wrongColor')}
           </span>
         </div>
@@ -120,6 +127,21 @@ export function ColorChainGame() {
           />
         ))}
       </div>
+
+      {/* Level indicator */}
+      <div className="p-2 bg-gray-800 flex justify-center items-center gap-2">
+        <span className="text-gray-400 text-sm">Lv.{level + 1}</span>
+        <div className="flex gap-1">
+          {getColorsForLevel(level).map((color) => (
+            <div
+              key={color}
+              className="w-4 h-4 rounded-full"
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </div>
+        <span className="text-gray-400 text-sm">({circles.length})</span>
+      </div>
     </div>
   );
 }
@@ -133,9 +155,15 @@ function CircleButton({
   onClick: () => void;
   disabled: boolean;
 }) {
+  const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!disabled) onClick();
+  };
+
   return (
-    <button
-      className="absolute rounded-full transition-transform active:scale-90 shadow-lg"
+    <div
+      className="absolute rounded-full shadow-lg cursor-pointer"
       style={{
         backgroundColor: circle.color,
         width: `${GAME_CONFIG.circleSize}px`,
@@ -144,9 +172,11 @@ function CircleButton({
         top: `${circle.y}%`,
         transform: 'translate(-50%, -50%)',
         opacity: disabled ? 0.5 : 1,
+        WebkitTapHighlightColor: 'transparent',
+        touchAction: 'none',
       }}
-      onClick={onClick}
-      disabled={disabled}
+      onClick={handleClick}
+      onTouchEnd={handleClick}
     />
   );
 }

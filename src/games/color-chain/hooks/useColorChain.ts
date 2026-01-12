@@ -2,7 +2,13 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ColorChainData, Circle } from '../types';
-import { GAME_CONFIG, COLORS } from '../constants';
+import {
+  GAME_CONFIG,
+  getLevelForScore,
+  getColorsForLevel,
+  getCircleCountForLevel,
+  getTimeBonusForLevel,
+} from '../constants';
 
 const initialData: ColorChainData = {
   phase: 'waiting',
@@ -12,6 +18,8 @@ const initialData: ColorChainData = {
   circles: [],
   timeLeft: GAME_CONFIG.gameDuration,
   penalty: 0,
+  level: 0,
+  levelUpMessage: null,
 };
 
 let circleIdCounter = 0;
@@ -21,8 +29,9 @@ function randomVelocity(): number {
   return (Math.random() - 0.5) * 2 * speed;
 }
 
-function createCircle(existingCircles: Circle[]): Circle {
-  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+function createCircle(existingCircles: Circle[], level: number): Circle {
+  const colors = getColorsForLevel(level);
+  const color = colors[Math.floor(Math.random() * colors.length)];
   const padding = 15;
 
   let x: number, y: number;
@@ -48,10 +57,10 @@ function createCircle(existingCircles: Circle[]): Circle {
   };
 }
 
-function generateCircles(count: number): Circle[] {
+function generateCircles(count: number, level: number): Circle[] {
   const circles: Circle[] = [];
   for (let i = 0; i < count; i++) {
-    circles.push(createCircle(circles));
+    circles.push(createCircle(circles, level));
   }
   return circles;
 }
@@ -66,7 +75,6 @@ function moveCircles(circles: Circle[]): Circle[] {
     let newVx = c.vx;
     let newVy = c.vy;
 
-    // 벽에 부딪히면 반사
     if (newX < padding || newX > max) {
       newVx = -newVx;
       newX = Math.max(padding, Math.min(max, newX));
@@ -85,14 +93,17 @@ export function useColorChain() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const penaltyRef = useRef<NodeJS.Timeout | null>(null);
   const moveRef = useRef<NodeJS.Timeout | null>(null);
+  const levelUpRef = useRef<NodeJS.Timeout | null>(null);
 
   const startGame = useCallback(() => {
     circleIdCounter = 0;
+    const initialLevel = 0;
     setData({
       ...initialData,
       phase: 'playing',
-      circles: generateCircles(GAME_CONFIG.circleCount),
+      circles: generateCircles(getCircleCountForLevel(initialLevel), initialLevel),
       timeLeft: GAME_CONFIG.gameDuration,
+      level: initialLevel,
     });
   }, []);
 
@@ -104,50 +115,70 @@ export function useColorChain() {
         const isSameColor = prev.lastColor === circle.color;
         const isFirstClick = prev.lastColor === null;
 
-        // 화면에 같은 색이 있는지 확인 (클릭한 것 제외)
         const sameColorExists = prev.circles.some(
           (c) => c.id !== circle.id && c.color === prev.lastColor
         );
 
+        let newScore = prev.score;
+        let newChain = prev.chain;
+        let newLastColor = prev.lastColor;
+        let newPenalty = prev.penalty;
+        let newLevel = prev.level;
+        let newTimeLeft = prev.timeLeft;
+        let levelUpMessage: string | null = null;
+
+        // 새 공 생성 (기존 공 제거 후)
+        const newCircles = prev.circles.filter((c) => c.id !== circle.id);
+
         if (isFirstClick || isSameColor) {
-          // 체인 유지 또는 시작
-          const newChain = isFirstClick ? 1 : prev.chain + 1;
+          newChain = isFirstClick ? 1 : prev.chain + 1;
           const points = Math.pow(2, newChain - 1);
-          const newCircles = prev.circles.filter((c) => c.id !== circle.id);
-          newCircles.push(createCircle(newCircles));
-
-          return {
-            ...prev,
-            score: prev.score + points,
-            chain: newChain,
-            lastColor: circle.color,
-            circles: newCircles,
-          };
+          newScore = prev.score + points;
+          newLastColor = circle.color;
         } else if (!sameColorExists) {
-          // 같은 색이 화면에 없으면 → 새 체인 시작 (페널티 없음)
-          const newCircles = prev.circles.filter((c) => c.id !== circle.id);
-          newCircles.push(createCircle(newCircles));
-
-          return {
-            ...prev,
-            score: prev.score + 1,
-            chain: 1,
-            lastColor: circle.color,
-            circles: newCircles,
-          };
+          newScore = prev.score + 1;
+          newChain = 1;
+          newLastColor = circle.color;
         } else {
-          // 같은 색이 있는데 다른 색 클릭 → 페널티
-          const newCircles = prev.circles.filter((c) => c.id !== circle.id);
-          newCircles.push(createCircle(newCircles));
-
-          return {
-            ...prev,
-            chain: 0,
-            lastColor: null,
-            circles: newCircles,
-            penalty: GAME_CONFIG.penaltyTime,
-          };
+          newChain = 0;
+          newLastColor = null;
+          newPenalty = GAME_CONFIG.penaltyTime;
         }
+
+        // 레벨업 체크
+        const calculatedLevel = getLevelForScore(newScore);
+        if (calculatedLevel > prev.level) {
+          newLevel = calculatedLevel;
+          const timeBonus = getTimeBonusForLevel(newLevel);
+          newTimeLeft = prev.timeLeft + timeBonus;
+
+          // 새 색상이 추가되었는지 확인
+          const prevColors = getColorsForLevel(prev.level).length;
+          const newColors = getColorsForLevel(newLevel).length;
+          if (newColors > prevColors) {
+            levelUpMessage = 'newColor';
+          } else {
+            levelUpMessage = 'levelUp';
+          }
+        }
+
+        // 공 개수 맞추기 (레벨업으로 공이 늘어났을 수 있음)
+        const targetCircleCount = getCircleCountForLevel(newLevel);
+        while (newCircles.length < targetCircleCount) {
+          newCircles.push(createCircle(newCircles, newLevel));
+        }
+
+        return {
+          ...prev,
+          score: newScore,
+          chain: newChain,
+          lastColor: newLastColor,
+          circles: newCircles,
+          penalty: newPenalty,
+          level: newLevel,
+          timeLeft: newTimeLeft,
+          levelUpMessage,
+        };
       });
     },
     [data.phase, data.penalty]
@@ -157,8 +188,21 @@ export function useColorChain() {
     if (timerRef.current) clearInterval(timerRef.current);
     if (penaltyRef.current) clearInterval(penaltyRef.current);
     if (moveRef.current) clearInterval(moveRef.current);
+    if (levelUpRef.current) clearTimeout(levelUpRef.current);
     setData(initialData);
   }, []);
+
+  // 레벨업 메시지 타이머
+  useEffect(() => {
+    if (data.levelUpMessage) {
+      levelUpRef.current = setTimeout(() => {
+        setData((prev) => ({ ...prev, levelUpMessage: null }));
+      }, 1500);
+    }
+    return () => {
+      if (levelUpRef.current) clearTimeout(levelUpRef.current);
+    };
+  }, [data.levelUpMessage]);
 
   // 공 이동 타이머
   useEffect(() => {
@@ -216,6 +260,7 @@ export function useColorChain() {
       if (timerRef.current) clearInterval(timerRef.current);
       if (penaltyRef.current) clearInterval(penaltyRef.current);
       if (moveRef.current) clearInterval(moveRef.current);
+      if (levelUpRef.current) clearTimeout(levelUpRef.current);
     };
   }, []);
 

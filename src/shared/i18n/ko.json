@@ -45,24 +45,6 @@
         "verySlow": "님 지금 자는 중?"
       }
     },
-    "aim-trainer": {
-      "name": "저격수",
-      "description": "나타나는 타겟을 빠르게 터치하세요",
-      "hit": "탕!",
-      "miss": "에휴",
-      "accuracy": "명중률",
-      "avgTime": "평균 시간",
-      "targetsHit": "맞춘 횟수",
-      "ranks": {
-        "godlike": "에임 핵 의심",
-        "insane": "이 구역의 스나이퍼",
-        "fast": "손목 무선으로 연결됨",
-        "good": "야 너 좀 치냐?",
-        "average": "그냥 그런 실력",
-        "slow": "과녁이 어디갔지?",
-        "verySlow": "화면 안 보고 침?"
-      }
-    },
     "sand-tetris": {
       "name": "흙트리스",
       "description": "같은 색을 좌우로 연결하면 사라집니다\n점수가 올라가면 색이 추가됩니다",
@@ -100,17 +82,19 @@
     },
     "color-chain": {
       "name": "컬러 체인",
-      "description": "같은 색을 연속으로 터치하면 점수 2배!\n다른 색 터치하면 체인 끊김",
+      "description": "같은 색 연속 터치로 콤보 2배!\n레벨업하면 새로운 색이 추가됩니다",
       "chain": "체인",
       "wrongColor": "앗! 다른 색!",
+      "levelUp": "레벨업!",
+      "newColor": "새 색상!",
       "ranks": {
-        "godlike": "색맹 아님 확인",
-        "insane": "색깔 귀신",
-        "fast": "무지개 마스터",
-        "good": "색감 좀 있네",
-        "average": "눈은 멀쩡함",
-        "slow": "색 구분 연습 필요",
-        "verySlow": "빨강이 뭐야?"
+        "godlike": "색깔의 신",
+        "insane": "무지개 마스터",
+        "fast": "매의 눈",
+        "good": "색감 좋은데?",
+        "average": "컬러 초보",
+        "slow": "아직 연습 중",
+        "verySlow": "워밍업 중"
       }
     }
   }

@@ -28,6 +28,7 @@ function BlockPreview({
       className={`cursor-grab active:cursor-grabbing transition-transform ${
         isDragging ? 'opacity-50 scale-90' : 'hover:scale-105'
       }`}
+      style={{ touchAction: 'none' }}
       onMouseDown={(e) => onDragStart(index, e)}
       onTouchStart={(e) => onDragStart(index, e)}
     >
@@ -157,6 +158,9 @@ export function BlockBlastGame() {
   // 드래그 중
   const handleDragMove = useCallback((e: MouseEvent | TouchEvent) => {
     if (!dragging) return;
+
+    // 모바일에서 페이지 스크롤 방지
+    e.preventDefault();
 
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
@@ -354,9 +358,12 @@ export function BlockBlastGame() {
       </div>
 
       {/* 블록 선택 영역 */}
-      <div className={`flex items-center justify-center gap-4 p-4 bg-gray-800 rounded-lg transition-opacity duration-500 ${
-        isEnding ? 'opacity-30' : ''
-      }`}>
+      <div
+        className={`flex items-center justify-center gap-4 p-4 bg-gray-800 rounded-lg transition-opacity duration-500 ${
+          isEnding ? 'opacity-30' : ''
+        }`}
+        style={{ touchAction: 'none' }}
+      >
         {currentBlocks.map((block, index) => (
           <BlockPreview
             key={index}

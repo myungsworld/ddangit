@@ -45,24 +45,6 @@
         "verySlow": "Are You Napping?"
       }
     },
-    "aim-trainer": {
-      "name": "Aim Trainer",
-      "description": "Hit the moving targets",
-      "hit": "Hit!",
-      "miss": "Miss",
-      "accuracy": "Accuracy",
-      "avgTime": "Avg Time",
-      "targetsHit": "Targets Hit",
-      "ranks": {
-        "godlike": "Aimbot IRL",
-        "insane": "Sniper Instinct",
-        "fast": "Hawk Eye",
-        "good": "Decent Shot",
-        "average": "Keep Practicing",
-        "slow": "Where's Target?",
-        "verySlow": "Eyes Closed?"
-      }
-    },
     "sand-tetris": {
       "name": "Sand Tetris",
       "description": "Connect same colors left to right!",
@@ -100,17 +82,19 @@
     },
     "color-chain": {
       "name": "Color Chain",
-      "description": "Tap same colors for 2x points!\nDifferent color breaks the chain",
+      "description": "Tap same colors in a row for 2x combo!\nMore colors unlock as you level up",
       "chain": "Chain",
       "wrongColor": "Wrong color!",
+      "levelUp": "Level Up!",
+      "newColor": "New Color!",
       "ranks": {
         "godlike": "Color God",
         "insane": "Rainbow Master",
-        "fast": "Color Pro",
-        "good": "Nice Eyes",
-        "average": "Getting Better",
-        "slow": "Need Practice",
-        "verySlow": "Colorblind?"
+        "fast": "Eagle Eyes",
+        "good": "Sharp Vision",
+        "average": "Color Rookie",
+        "slow": "Still Learning",
+        "verySlow": "Just Warming Up"
       }
     }
   }

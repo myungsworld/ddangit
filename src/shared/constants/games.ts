@@ -54,29 +54,16 @@ export const GAMES: GameMeta[] = [
     },
   },
   {
-    id: 'aim-trainer',
-    name: 'Aim',
-    description: 'Hit the targets',
-    icon: '🎯',
-    path: '/games/aim-trainer',
-    color: '#EF4444',
-    estimatedTime: '30s',
-    seo: {
-      title: 'Aim Trainer | ddangit',
-      description: 'Test your aim! Hit targets as fast as you can.',
-    },
-  },
-  {
     id: 'color-chain',
     name: 'Color Chain',
-    description: 'Chain same colors',
+    description: 'Combo chain game',
     icon: '🔗',
     path: '/games/color-chain',
     color: '#F59E0B',
     estimatedTime: '30s',
     seo: {
       title: 'Color Chain | ddangit',
-      description: 'Tap same colors to build chains! How high can you score?',
+      description: 'Tap same colors for 2x combos! Level up to unlock new colors.',
     },
   },
 ];

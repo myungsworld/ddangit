@@ -17,4 +17,6 @@ export interface ColorChainData {
   circles: Circle[];
   timeLeft: number;
   penalty: number;
+  level: number;
+  levelUpMessage: string | null;
 }

@@ -31,7 +31,12 @@ logs:
 deploy:
 	@if [ -f .env.local ]; then \
 		export $$(grep -v '^#' .env.local | grep -v '^$$' | xargs) && \
-		vercel --prod --token $$VERCEL_TOKEN --yes; \
+		vercel --prod --token $$VERCEL_TOKEN --yes && \
+		echo "Cleaning up old deployments..." && \
+		vercel ls --token $$VERCEL_TOKEN 2>&1 | grep 'https://' | tail -n +6 | awk '{print $$2}' > /tmp/vercel_urls.txt && \
+		while read url; do [ -n "$$url" ] && vercel rm "$$url" --token $$VERCEL_TOKEN --yes 2>/dev/null || true; done < /tmp/vercel_urls.txt && \
+		rm -f /tmp/vercel_urls.txt && \
+		echo "Done! Kept latest 5 deployments."; \
 	else \
 		echo "Error: .env.local not found. Create it with VERCEL_TOKEN=your_token"; \
 	fi

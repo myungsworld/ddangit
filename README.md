@@ -2,17 +2,18 @@
 
 심심할 때 하는 미니게임 모음
 
-**Live:** https://ddangit.vercel.app
+[**딴짓하러가기**](https://ddangit.vercel.app)
 
 ---
 
 ## Games
 
-| Game              | Description            |
-| ----------------- | ---------------------- |
-| ⚡ Reaction Speed | 반응속도 테스트        |
-| 🎯 Aim Trainer    | 움직이는 타겟 맞추기   |
-| 🧱 Sand Tetris    | 같은 색을 좌→우로 연결 |
+| Game              | Description                  |
+| ----------------- | ---------------------------- |
+| 🧱 Sand Tetris    | 같은 색을 좌→우로 연결       |
+| 🧩 Block Blast    | 블록을 배치해서 줄을 완성    |
+| ⚡ Reaction Speed | 반응속도 테스트              |
+| 🔗 Color Chain    | 같은 색 연속 터치로 콤보 2배 |
 
 ---
 
@@ -27,9 +28,10 @@ src/
 │   │   │   └── twitter/      # Twitter 단독
 │   │   └── ranking/          # 랭킹 API
 │   ├── games/
+│   │   ├── sand-tetris/
+│   │   ├── block-blast/
 │   │   ├── reaction-speed/
-│   │   ├── aim-trainer/
-│   │   └── sand-tetris/
+│   │   └── color-chain/
 │   ├── privacy/              # 개인정보처리방침 (AdSense용)
 │   ├── layout.tsx
 │   └── page.tsx
@@ -68,10 +70,16 @@ src/
     │   ├── ui/               # Button 등 기본 UI
     │   ├── game/             # GameLayout, GameResult, RankingBoard
     │   └── ad/               # AdSlot (광고)
+    ├── contexts/
+    │   └── LanguageContext   # 다국어 지원 (ko/en)
+    ├── i18n/                 # 번역 파일
+    │   ├── ko.json
+    │   └── en.json
     ├── hooks/
     │   └── useRanking.ts     # 랭킹 API 훅
     ├── types/
     └── constants/
+        └── games.ts          # 게임 레지스트리 (SSoT)
 
 scripts/
 └── promo.sh                  # 수동 홍보 스크립트
