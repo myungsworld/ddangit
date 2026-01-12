@@ -25,6 +25,10 @@ export const GAME_COMPONENTS: Record<string, ComponentType> = {
     () => import('./tariff-dodge').then((m) => ({ default: m.TariffDodgeGame })),
     { ssr: false }
   ),
+  'color-match': dynamic(
+    () => import('./color-match').then((m) => ({ default: m.ColorMatchGame })),
+    { ssr: false }
+  ),
 };
 
 /**

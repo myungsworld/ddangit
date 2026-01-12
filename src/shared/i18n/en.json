@@ -112,6 +112,21 @@
         "slow": "Rookie Exporter",
         "verySlow": "Bankrupted"
       }
+    },
+    "color-match": {
+      "name": "Color Match",
+      "description": "Match the text COLOR, not the word!\n30 seconds to score",
+      "hint": "Select the text color",
+      "streak": "Streak",
+      "ranks": {
+        "godlike": "Stroop Master",
+        "insane": "Brain Overload",
+        "fast": "Color Vision Pro",
+        "good": "Sharp Mind",
+        "average": "Average Brain",
+        "slow": "Brain Lag",
+        "verySlow": "Color Blind?"
+      }
     }
   }
 }

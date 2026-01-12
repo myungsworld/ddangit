@@ -81,6 +81,19 @@ export const GAMES: GameMeta[] = [
       description: 'Dodge falling tariffs! How long can you survive?',
     },
   },
+  {
+    id: 'color-match',
+    name: 'Color Match',
+    description: 'Stroop test challenge',
+    icon: '🎨',
+    path: '/games/color-match',
+    color: '#EC4899',
+    estimatedTime: '30s',
+    seo: {
+      title: 'Color Match | ddangit',
+      description: 'Stroop test! Match the color of the text, not the word!',
+    },
+  },
 ];
 
 // O(1) 조회를 위한 Map
