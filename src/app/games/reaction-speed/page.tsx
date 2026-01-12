@@ -4,8 +4,18 @@ import { ReactionGame } from '@/games/reaction-speed';
 import { GAME_CONFIG } from '@/games/reaction-speed/constants';
 
 export const metadata: Metadata = {
-  title: 'Reaction Test | ddangit',
-  description: 'Test your reaction speed',
+  title: 'Reaction Speed Test | ddangit',
+  description: 'How fast can you react? Test your reflexes now!',
+  openGraph: {
+    title: 'Reaction Speed Test | ddangit',
+    description: 'How fast can you react? Test your reflexes now!',
+    url: '/games/reaction-speed',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Reaction Speed Test | ddangit',
+    description: 'How fast can you react? Test your reflexes now!',
+  },
 };
 
 export default function ReactionSpeedPage() {

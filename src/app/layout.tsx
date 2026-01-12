@@ -15,9 +15,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const BASE_URL = 'https://ddangit.vercel.app';
+
 export const metadata: Metadata = {
   title: "ddangit | Quick Games",
-  description: "Simple mini-games to kill time",
+  description: "Simple mini-games to kill time. Test your reaction speed, aim, and more!",
+  metadataBase: new URL(BASE_URL),
+  openGraph: {
+    title: 'ddangit | Quick Games',
+    description: 'Simple mini-games to kill time. Test your reaction speed, aim, and more!',
+    url: BASE_URL,
+    siteName: 'ddangit',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ddangit | Quick Games',
+    description: 'Simple mini-games to kill time. Test your reaction speed, aim, and more!',
+  },
   other: {
     "google-adsense-account": "ca-pub-6250352377526864",
   },

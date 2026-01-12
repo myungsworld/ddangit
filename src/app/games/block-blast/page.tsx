@@ -5,7 +5,17 @@ import { GAME_CONFIG } from '@/games/block-blast/constants';
 
 export const metadata: Metadata = {
   title: 'Block Blast | ddangit',
-  description: 'Clear rows and columns by placing blocks',
+  description: 'Place blocks to complete rows and columns!',
+  openGraph: {
+    title: 'Block Blast | ddangit',
+    description: 'Place blocks to complete rows and columns!',
+    url: '/games/block-blast',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Block Blast | ddangit',
+    description: 'Place blocks to complete rows and columns!',
+  },
 };
 
 export default function BlockBlastPage() {

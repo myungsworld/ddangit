@@ -5,7 +5,17 @@ import { GAME_CONFIG } from '@/games/sand-tetris/constants';
 
 export const metadata: Metadata = {
   title: 'Sand Tetris | ddangit',
-  description: 'Tetris with sand physics',
+  description: 'Tetris with sand physics! Connect same colors to clear.',
+  openGraph: {
+    title: 'Sand Tetris | ddangit',
+    description: 'Tetris with sand physics! Connect same colors to clear.',
+    url: '/games/sand-tetris',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sand Tetris | ddangit',
+    description: 'Tetris with sand physics! Connect same colors to clear.',
+  },
 };
 
 export default function SandTetrisPage() {
