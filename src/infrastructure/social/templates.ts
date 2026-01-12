@@ -19,17 +19,25 @@ interface MessageContext {
   platform?: Platform; // 플랫폼별 메시지 길이 조절
 }
 
-// 게임 목록 동적 생성 (개행 + 링크 포함) + 마지막에 메인 링크
-function getGameListText(): string {
-  const gameList = GAMES.map(g => `${g.icon} ${g.name}\n👉 ${BASE_URL}${g.path}`).join('\n\n');
-  // 마지막에 메인 링크 추가 (트위터 카드가 메인 페이지를 보여주도록)
-  return `${gameList}\n\n🏠 All Games\n👉 ${BASE_URL}`;
+// 배열에서 랜덤 n개 선택
+function pickRandom<T>(arr: T[], n: number): T[] {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
 }
 
-// Bluesky용 짧은 게임 목록 (300자 제한)
+// 게임 목록 동적 생성 (랜덤 3개 + 메인 링크)
+function getGameListText(): string {
+  const randomGames = pickRandom(GAMES, 3);
+  const gameList = randomGames.map(g => `${g.icon} ${g.name}\n👉 ${BASE_URL}${g.path}`).join('\n\n');
+  // 마지막에 메인 링크 추가 (트위터 카드가 메인 페이지를 보여주도록)
+  return `${gameList}\n\n🏠 More Games\n👉 ${BASE_URL}`;
+}
+
+// Bluesky용 짧은 게임 목록 (300자 제한, 랜덤 3개)
 function getGameListTextShort(): string {
-  const gameNames = GAMES.map(g => `${g.icon} ${g.name}`).join(' • ');
-  return `${gameNames}\n\n👉 ${BASE_URL}`;
+  const randomGames = pickRandom(GAMES, 3);
+  const gameList = randomGames.map(g => `${g.icon} ${g.name}`).join('\n');
+  return `${gameList}\n\n👉 ${BASE_URL}`;
 }
 
 // 메시지 템플릿 풀 (한국어)
