@@ -66,6 +66,19 @@ export const GAMES: GameMeta[] = [
       description: 'Test your aim! Hit targets as fast as you can.',
     },
   },
+  {
+    id: 'color-chain',
+    name: 'Color Chain',
+    description: 'Chain same colors',
+    icon: '🔗',
+    path: '/games/color-chain',
+    color: '#F59E0B',
+    estimatedTime: '30s',
+    seo: {
+      title: 'Color Chain | ddangit',
+      description: 'Tap same colors to build chains! How high can you score?',
+    },
+  },
 ];
 
 // 유틸리티 함수

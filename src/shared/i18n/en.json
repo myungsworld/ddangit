@@ -97,6 +97,21 @@
         "slow": "Keep Trying",
         "verySlow": "Just Started"
       }
+    },
+    "color-chain": {
+      "name": "Color Chain",
+      "description": "Tap same colors for 2x points!\nDifferent color breaks the chain",
+      "chain": "Chain",
+      "wrongColor": "Wrong color!",
+      "ranks": {
+        "godlike": "Color God",
+        "insane": "Rainbow Master",
+        "fast": "Color Pro",
+        "good": "Nice Eyes",
+        "average": "Getting Better",
+        "slow": "Need Practice",
+        "verySlow": "Colorblind?"
+      }
     }
   }
 }

@@ -1,0 +1,1 @@
+export { ColorChainGame } from './ColorChainGame';
