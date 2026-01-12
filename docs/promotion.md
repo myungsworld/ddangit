@@ -4,16 +4,16 @@
 
 ### Twitter/X
 - [x] OAuth 1.0a 인증
-- [x] 자동 홍보 (Cron)
+- [x] 자동 홍보 (GitHub Actions)
 - [x] 한국어/영어 랜덤 메시지
 - [x] 랜덤 해시태그
-- [x] 게임 목록 + 메인 링크 (Twitter Card용)
+- [x] 랜덤 3개 게임 목록 + 메인 링크 (Twitter Card용)
 
 ### Bluesky
 - [x] AT Protocol REST API
 - [x] 영어 전용 (짧은 메시지)
 - [x] 클릭 가능한 링크 (facets)
-- [x] 300자 제한 대응
+- [x] 300자 제한 대응 (랜덤 3개 게임)
 
 ### 알림
 - [x] 이메일 알림 (Resend API)
@@ -41,8 +41,8 @@
 ## 스크립트
 
 ```bash
-# 전체 (Twitter + Bluesky)
-./scripts/promo.sh prod all
+# 전체 (모든 플랫폼)
+./scripts/promo.sh prod
 
 # Twitter만
 ./scripts/promo.sh prod twitter

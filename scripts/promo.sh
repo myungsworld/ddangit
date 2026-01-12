@@ -43,20 +43,15 @@ ENDPOINT="/api/promo/all"
 URL="${BASE_URL}${ENDPOINT}"
 
 # 플랫폼별 JSON body 설정
+# all이면 body 없이 호출 (서버가 모든 플랫폼에 발송)
 if [ "$PLATFORM" = "all" ]; then
-  BODY='{"platforms":["twitter","bluesky"]}'
-elif [ "$PLATFORM" = "twitter" ]; then
-  BODY='{"platforms":["twitter"]}'
-elif [ "$PLATFORM" = "bluesky" ]; then
-  BODY='{"platforms":["bluesky"]}'
+  BODY='{}'
 else
-  echo -e "${RED}❌ Unknown platform: $PLATFORM${NC}"
-  echo "Available: all, twitter, bluesky"
-  exit 1
+  BODY="{\"platforms\":[\"$PLATFORM\"]}"
 fi
 
 echo "Calling: POST $URL"
-echo "Body: $BODY"
+[ "$PLATFORM" != "all" ] && echo "Body: $BODY"
 echo ""
 
 # 프로덕션이면 API 키 헤더 추가
