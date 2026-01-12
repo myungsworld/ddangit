@@ -124,6 +124,54 @@ interface GameMeta {
 }
 ```
 
+## 홍보 플랫폼 추가 체크리스트
+
+새 소셜 플랫폼을 추가할 때:
+
+### 1. 타입 정의 (필수)
+- [ ] `src/infrastructure/social/types/index.ts`에 Platform 타입 추가
+  ```typescript
+  export type Platform = 'twitter' | 'bluesky' | 'new-platform';
+  ```
+
+### 2. 어댑터 구현 (필수)
+- [ ] `src/infrastructure/social/adapters/new-platform.ts` 생성
+  ```typescript
+  export class NewPlatformAdapter implements SocialAdapter {
+    platform = 'new-platform' as const;
+    isConfigured(): boolean { /* 환경변수 체크 */ }
+    async post(options: PostOptions): Promise<PostResult> { /* 발송 로직 */ }
+  }
+  ```
+
+### 3. 레지스트리 등록 (필수)
+- [ ] `src/infrastructure/social/index.ts`에 어댑터 등록
+  ```typescript
+  import { NewPlatformAdapter } from './adapters/new-platform';
+
+  const adapters: Record<Platform, () => SocialAdapter> = {
+    twitter: () => new TwitterAdapter(),
+    bluesky: () => new BlueskyAdapter(),
+    'new-platform': () => new NewPlatformAdapter(),
+  };
+  ```
+
+### 4. 메시지 템플릿 (선택)
+- [ ] `src/infrastructure/social/templates.ts`에서 플랫폼별 처리 필요시 추가
+- [ ] `src/app/api/promo/all/route.ts`의 `getMessageOptions()`에 플랫폼별 설정 추가
+
+### 5. 환경변수 설정
+- [ ] Vercel Dashboard → Settings → Environment Variables에 API 키 추가
+- [ ] `docs/cron-jobs.md` 환경변수 목록 업데이트
+
+### 자동으로 적용되는 것들
+위 체크리스트를 완료하면 아래는 자동으로 적용됩니다:
+- ✅ 매일 자동 홍보 (GitHub Actions cron)
+- ✅ 수동 발송 스크립트 (`./scripts/promo.sh`)
+- ✅ API 상태 확인 (`GET /api/promo/all`)
+
 ## 참고 링크
 - 개발일지: `docs/dev-log.md`
 - 기능 로드맵: `docs/todo-features.md`
+- 홍보 설정: `docs/promotion.md`
+- Cron 설정: `docs/cron-jobs.md`
