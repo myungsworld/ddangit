@@ -8,16 +8,12 @@
 - [x] robots.txt
 - [x] 게임별 SEO 메타데이터 (games.ts에서 관리)
 - [x] generateGameMetadata 헬퍼 함수
+- [x] Google Search Console 등록 + sitemap 제출
+- [x] Naver Search Advisor 등록 + sitemap 제출
+- [x] Bing Webmaster 등록 + sitemap 제출 (Yahoo, DuckDuckGo 포함)
+- [x] Yandex Webmaster 등록 + sitemap 제출
 
 ## TODO
-
-### 검색엔진 등록
-
-| 항목 | 설명 | 상태 |
-|------|------|------|
-| Google Search Console | 검색 성과 모니터링, sitemap 제출 | [ ] |
-| Bing Webmaster | Bing 검색 등록 | [ ] |
-| Naver Search Advisor | 네이버 검색 등록 | [ ] |
 
 ### 구조화 데이터
 
