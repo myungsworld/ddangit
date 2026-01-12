@@ -61,6 +61,22 @@ src/
   - `constants/` - 게임 상수
   - `types/` - 타입 정의
   - `index.ts` - 내보내기
+- [ ] 등급 시스템 구현 (GameResult에 subtitle로 전달)
+  ```typescript
+  // 게임 컴포넌트에 getRankKey 함수 추가
+  function getRankKey(score: number): string {
+    if (score >= 50) return 'godlike';
+    if (score >= 40) return 'insane';
+    // ... 기준은 게임마다 다름
+    return 'verySlow';
+  }
+
+  // GameResult에 subtitle prop 전달
+  <GameResult
+    subtitle={t(`games.${GAME_CONFIG.id}.ranks.${getRankKey(score)}`)}
+    // ... 나머지 props
+  />
+  ```
 
 ### 3. 컴포넌트 레지스트리 등록 (필수)
 - [ ] `src/games/registry.tsx`에 게임 컴포넌트 등록
