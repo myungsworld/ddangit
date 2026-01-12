@@ -24,21 +24,9 @@ export default async function Image() {
           fontFamily: 'system-ui, sans-serif',
         }}
       >
-        {/* Game Icons */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '24px',
-            marginBottom: '40px',
-            fontSize: '64px',
-          }}
-        >
-          <span>🧱</span>
-          <span>🧩</span>
-          <span>⚡</span>
-          <span>🔗</span>
-          <span>📦</span>
-          <span>🎨</span>
+        {/* Game Icon */}
+        <div style={{ fontSize: '120px', marginBottom: '24px' }}>
+          🎮
         </div>
 
         {/* Title */}
@@ -59,33 +47,9 @@ export default async function Image() {
           style={{
             fontSize: '36px',
             color: '#94a3b8',
-            marginBottom: '48px',
           }}
         >
           Quick Games
-        </div>
-
-        {/* Game Tags */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '16px',
-          }}
-        >
-          {['Sand Tetris', 'Block Blast', 'Reaction', 'Color Chain', 'Tariff Dodge', 'Color Match'].map((game) => (
-            <div
-              key={game}
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                padding: '12px 24px',
-                borderRadius: '24px',
-                color: '#e2e8f0',
-                fontSize: '20px',
-              }}
-            >
-              {game}
-            </div>
-          ))}
         </div>
       </div>
     ),
