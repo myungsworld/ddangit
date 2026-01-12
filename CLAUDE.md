@@ -9,7 +9,7 @@ src/
 ├── app/                    # Next.js App Router
 │   ├── games/[gameId]/     # 동적 라우트 (모든 게임 자동 처리)
 │   ├── api/                # API 라우트
-│   ├── sitemap.ts          # 자동 생성 (GAMES 사용)
+│   ├── sitemap.ts          # 자동 생성
 │   └── robots.ts           # 자동 생성
 ├── games/                  # 게임별 로직
 │   ├── registry.tsx        # ⭐ 게임 컴포넌트 레지스트리
@@ -19,175 +19,71 @@ src/
 │       ├── constants/
 │       └── types/
 ├── shared/
-│   ├── constants/
-│   │   ├── games.ts        # ⭐ 게임 메타데이터 레지스트리
-│   │   └── metadata.ts     # SEO 메타데이터 생성
-│   ├── i18n/
-│   │   ├── ko.json         # 한국어 번역
-│   │   └── en.json         # 영어 번역
+│   ├── constants/games.ts  # ⭐ 게임 메타데이터 (Single Source of Truth)
+│   ├── i18n/               # ko.json, en.json
 │   └── components/
 └── infrastructure/
     ├── social/             # Twitter/Bluesky 홍보
-    │   └── templates.ts    # 홍보 메시지 (GAMES 사용)
     └── storage/            # 랭킹 저장소
 ```
 
 ## 게임 추가 체크리스트
 
-새 게임을 추가할 때 반드시 아래 항목을 모두 완료해야 합니다:
+새 게임 추가 시 **모든 항목**을 완료해야 합니다:
 
-### 1. 게임 레지스트리 등록 (필수)
-- [ ] `src/shared/constants/games.ts`에 게임 정보 추가
-  ```typescript
-  {
-    id: 'new-game',
-    name: 'New Game',
-    description: 'Game description',
-    icon: '🎮',
-    path: '/games/new-game',
-    color: '#HEX',
-    estimatedTime: '1m',
-    seo: {
-      title: 'New Game | ddangit',
-      description: 'SEO description for search engines',
-    },
-  }
-  ```
+### 1. 메타데이터 등록
+- [ ] `src/shared/constants/games.ts` - 게임 정보 추가
+- [ ] `README.md` - Games 테이블에 추가
 
-### 2. 게임 로직 구현 (필수)
+### 2. 게임 구현
 - [ ] `src/games/[game-id]/` 폴더 생성
-  - `components/` - 게임 컴포넌트
-  - `hooks/` - 게임 로직 훅
-  - `constants/` - 게임 상수
+  - `components/` - UI 컴포넌트
+  - `hooks/` - 게임 로직
+  - `constants/` - 설정값
   - `types/` - 타입 정의
-  - `index.ts` - 내보내기
-- [ ] 등급 시스템 구현 (GameResult에 subtitle로 전달)
-  ```typescript
-  // 게임 컴포넌트에 getRankKey 함수 추가
-  function getRankKey(score: number): string {
-    if (score >= 50) return 'godlike';
-    if (score >= 40) return 'insane';
-    // ... 기준은 게임마다 다름
-    return 'verySlow';
-  }
+  - `index.ts` - export
+- [ ] 등급 시스템 구현 (`getRankKey` 함수 + `GameResult` subtitle)
 
-  // GameResult에 subtitle prop 전달
-  <GameResult
-    subtitle={t(`games.${GAME_CONFIG.id}.ranks.${getRankKey(score)}`)}
-    // ... 나머지 props
-  />
-  ```
+### 3. 레지스트리 등록
+- [ ] `src/games/registry.tsx` - dynamic import 추가
 
-### 3. 컴포넌트 레지스트리 등록 (필수)
-- [ ] `src/games/registry.tsx`에 게임 컴포넌트 등록
-  ```typescript
-  'new-game': dynamic(
-    () => import('./new-game').then((m) => ({ default: m.NewGameComponent })),
-    { ssr: false }
-  ),
-  ```
+### 4. 번역 추가
+- [ ] `src/shared/i18n/ko.json` - 한국어
+- [ ] `src/shared/i18n/en.json` - 영어
+- [ ] `ranks` 객체 필수 (godlike ~ verySlow)
 
-### 4. 번역 추가 (필수)
-- [ ] `src/shared/i18n/ko.json`에 게임 번역 추가
-- [ ] `src/shared/i18n/en.json`에 게임 번역 추가
-  ```json
-  "games": {
-    "new-game": {
-      "name": "게임 이름",
-      "description": "게임 설명",
-      "ranks": {
-        "godlike": "최고 등급",
-        "insane": "...",
-        "fast": "...",
-        "good": "...",
-        "average": "...",
-        "slow": "...",
-        "verySlow": "최저 등급"
-      }
-    }
-  }
-  ```
+### 5. 문서 업데이트
+- [ ] `docs/game-ideas.md` - 현재 게임 목록 업데이트
 
-### 자동으로 적용되는 것들
-위 체크리스트를 완료하면 아래는 자동으로 적용됩니다:
-- ✅ 메인 페이지 게임 목록
-- ✅ sitemap.xml
-- ✅ Twitter/Bluesky 홍보 메시지
-- ✅ SEO 메타데이터 (Open Graph, Twitter Card)
-- ✅ 게임 페이지 (동적 라우트로 자동 생성)
+### 자동 적용 항목
+- 메인 페이지 게임 목록
+- sitemap.xml
+- SNS 홍보 메시지
+- SEO 메타데이터
+- 게임 페이지 (동적 라우트)
 
-## 기능 추가 시 주의사항
-
-### 새 기능이 게임과 연관될 때
-게임별로 적용되어야 하는 새 기능을 추가할 경우:
-1. `GameMeta` 타입 확장 (`src/shared/types/game.ts`)
-2. `GAMES` 배열의 각 게임에 새 필드 추가
-3. 이 문서의 체크리스트 업데이트
-
-### 예시: 게임별 난이도 추가
-```typescript
-// 1. 타입 확장
-interface GameMeta {
-  // ... 기존 필드
-  difficulty: 'easy' | 'medium' | 'hard';
-}
-
-// 2. games.ts 업데이트
-{
-  id: 'reaction-speed',
-  // ... 기존 필드
-  difficulty: 'easy',
-}
-```
+---
 
 ## 홍보 플랫폼 추가 체크리스트
 
-새 소셜 플랫폼을 추가할 때:
+### 필수 항목
+1. `src/infrastructure/social/types/index.ts` - Platform 타입 추가
+2. `src/infrastructure/social/adapters/` - 어댑터 구현
+3. `src/infrastructure/social/index.ts` - 레지스트리 등록
+4. Vercel 환경변수 설정
+5. GitHub Secrets 설정 (필요시)
 
-### 1. 타입 정의 (필수)
-- [ ] `src/infrastructure/social/types/index.ts`에 Platform 타입 추가
-  ```typescript
-  export type Platform = 'twitter' | 'bluesky' | 'new-platform';
-  ```
+### 자동 적용 항목
+- GitHub Actions 일일 홍보
+- 수동 발송 스크립트
+- API 상태 확인
 
-### 2. 어댑터 구현 (필수)
-- [ ] `src/infrastructure/social/adapters/new-platform.ts` 생성
-  ```typescript
-  export class NewPlatformAdapter implements SocialAdapter {
-    platform = 'new-platform' as const;
-    isConfigured(): boolean { /* 환경변수 체크 */ }
-    async post(options: PostOptions): Promise<PostResult> { /* 발송 로직 */ }
-  }
-  ```
-
-### 3. 레지스트리 등록 (필수)
-- [ ] `src/infrastructure/social/index.ts`에 어댑터 등록
-  ```typescript
-  import { NewPlatformAdapter } from './adapters/new-platform';
-
-  const adapters: Record<Platform, () => SocialAdapter> = {
-    twitter: () => new TwitterAdapter(),
-    bluesky: () => new BlueskyAdapter(),
-    'new-platform': () => new NewPlatformAdapter(),
-  };
-  ```
-
-### 4. 메시지 템플릿 (선택)
-- [ ] `src/infrastructure/social/templates.ts`에서 플랫폼별 처리 필요시 추가
-- [ ] `src/app/api/promo/all/route.ts`의 `getMessageOptions()`에 플랫폼별 설정 추가
-
-### 5. 환경변수 설정
-- [ ] Vercel Dashboard → Settings → Environment Variables에 API 키 추가
-- [ ] `docs/cron-jobs.md` 환경변수 목록 업데이트
-
-### 자동으로 적용되는 것들
-위 체크리스트를 완료하면 아래는 자동으로 적용됩니다:
-- ✅ 매일 자동 홍보 (GitHub Actions cron)
-- ✅ 수동 발송 스크립트 (`./scripts/promo.sh`)
-- ✅ API 상태 확인 (`GET /api/promo/all`)
+---
 
 ## 참고 링크
-- 개발일지: `docs/dev-log.md`
-- 기능 로드맵: `docs/todo-features.md`
-- 홍보 설정: `docs/promotion.md`
-- Cron 설정: `docs/cron-jobs.md`
+
+| 문서 | 경로 |
+|------|------|
+| 게임 아이디어 | `docs/game-ideas.md` |
+| Cron/홍보 설정 | `docs/cron-jobs.md` |
+| 개발 가이드 | `docs/development.md` |
