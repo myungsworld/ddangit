@@ -6,6 +6,17 @@ import { GAME_CONFIG, COLORS } from '../constants';
 import { GameResult } from '@/shared/components/game/GameResult';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 
+// 점수에 따른 등급 결정
+function getRankKey(score: number): string {
+  if (score >= 50) return 'godlike';
+  if (score >= 40) return 'insane';
+  if (score >= 30) return 'fast';
+  if (score >= 20) return 'good';
+  if (score >= 10) return 'average';
+  if (score >= 5) return 'slow';
+  return 'verySlow';
+}
+
 export function ColorMatchGame() {
   const { t, language } = useLanguage();
 
@@ -74,19 +85,22 @@ export function ColorMatchGame() {
 
   // 게임 오버 화면
   if (phase === 'gameover') {
+    const rankKey = getRankKey(score);
+    const rankLabel = t(`games.${GAME_CONFIG.id}.ranks.${rankKey}`);
     return (
       <GameResult
         title={t('common.gameOver')}
         score={score.toLocaleString()}
         scoreValue={score}
         gameId={GAME_CONFIG.id}
+        subtitle={rankLabel}
         color={GAME_CONFIG.color}
         onRetry={startGame}
         onShare={() => {
           if (navigator.share) {
             navigator.share({
               title: t(`games.${GAME_CONFIG.id}.name`),
-              text: `I scored ${score} points with ${gameData.bestStreak} streak!`,
+              text: `${score} points - ${rankLabel}`,
               url: window.location.href,
             });
           }
