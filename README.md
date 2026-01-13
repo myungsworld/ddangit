@@ -16,6 +16,7 @@
 | 🔗 Color Chain | 같은 색 연속 터치로 콤보 2배 |
 | 📦 Tariff Dodge | 관세 피하기 서바이벌 |
 | 🎨 Color Match | 스트룹 테스트 - 글자색 맞추기 |
+| 🪜 Infinite Stairs | 무한 계단 오르기 - 땅에서 우주까지 |
 
 ---
 

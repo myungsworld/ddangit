@@ -1,0 +1,1 @@
+export { InfiniteStairsGame } from './InfiniteStairsGame';

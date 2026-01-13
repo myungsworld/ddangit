@@ -127,6 +127,24 @@
         "slow": "눈보다 머리가 느려",
         "verySlow": "컬러 초보"
       }
+    },
+    "infinite-stairs": {
+      "name": "무한계단",
+      "description": "왼쪽 오른쪽 계단을 올라가세요!\n빠르면 시간 보너스, 콤보로 피버 모드!",
+      "floor": "층",
+      "floorUnit": "층",
+      "maxCombo": "최대 콤보",
+      "golden": "황금 계단",
+      "totalScore": "총 점수",
+      "ranks": {
+        "godlike": "천국행 엘리베이터",
+        "insane": "계단 스프린터",
+        "fast": "등산의 신",
+        "good": "헬스장 다니세요?",
+        "average": "엘리베이터 고장남",
+        "slow": "무릎이 아파요",
+        "verySlow": "1층에서 헤맴"
+      }
     }
   }
 }

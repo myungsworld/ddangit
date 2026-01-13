@@ -94,6 +94,19 @@ export const GAMES: GameMeta[] = [
       description: 'Stroop test! Match the color of the text, not the word!',
     },
   },
+  {
+    id: 'infinite-stairs',
+    name: 'Infinite Stairs',
+    description: 'Climb as high as you can',
+    icon: '🪜',
+    path: '/games/infinite-stairs',
+    color: '#6366F1',
+    estimatedTime: '30s',
+    seo: {
+      title: 'Infinite Stairs | ddangit',
+      description: 'Climb infinite stairs! Left or right, how high can you go?',
+    },
+  },
 ];
 
 // O(1) 조회를 위한 Map

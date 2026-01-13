@@ -29,6 +29,13 @@ export const GAME_COMPONENTS: Record<string, ComponentType> = {
     () => import('./color-match').then((m) => ({ default: m.ColorMatchGame })),
     { ssr: false }
   ),
+  'infinite-stairs': dynamic(
+    () =>
+      import('./infinite-stairs').then((m) => ({
+        default: m.InfiniteStairsGame,
+      })),
+    { ssr: false }
+  ),
 };
 
 /**

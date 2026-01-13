@@ -127,6 +127,24 @@
         "slow": "Brain Lag",
         "verySlow": "Color Blind?"
       }
+    },
+    "infinite-stairs": {
+      "name": "Infinite Stairs",
+      "description": "Climb left and right stairs!\nFast input = time bonus, combo = fever mode!",
+      "floor": "Floor",
+      "floorUnit": "F",
+      "maxCombo": "Max Combo",
+      "golden": "Golden Stairs",
+      "totalScore": "Total Score",
+      "ranks": {
+        "godlike": "Stairway to Heaven",
+        "insane": "Stair Sprinter",
+        "fast": "Climbing God",
+        "good": "Leg Day Champ",
+        "average": "Elevator Broken",
+        "slow": "Knee Pain",
+        "verySlow": "Lost on Floor 1"
+      }
     }
   }
 }
