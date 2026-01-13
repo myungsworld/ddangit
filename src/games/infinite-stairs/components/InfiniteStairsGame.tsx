@@ -296,12 +296,12 @@ export function InfiniteStairsGame() {
       <div className="flex-1 relative overflow-hidden flex">
         {/* 왼쪽 터치 영역 */}
         <div
-          className="absolute left-0 top-0 w-1/2 h-full z-10 active:bg-white/10 transition-colors"
+          className="absolute left-0 top-0 w-1/2 h-full z-10"
           onClick={() => !isFalling && handleInput('left')}
         />
         {/* 오른쪽 터치 영역 */}
         <div
-          className="absolute right-0 top-0 w-1/2 h-full z-10 active:bg-white/10 transition-colors"
+          className="absolute right-0 top-0 w-1/2 h-full z-10"
           onClick={() => !isFalling && handleInput('right')}
         />
 
