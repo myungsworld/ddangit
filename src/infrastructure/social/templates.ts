@@ -40,13 +40,21 @@ function getGameListTextShort(): string {
   return `${gameList}\n\n👉 ${BASE_URL}`;
 }
 
-// 메시지 템플릿 풀 (한국어)
+// 메시지 템플릿 풀 (한국어) - Twitter, Facebook용
 const TEMPLATES_KO: Record<MessageType, string[]> = {
   general: [
     '🎮 심심할 때 딱 좋은 미니게임!\n\n{games}',
-    '⚡ 간단한 미니게임으로 테스트해보세요!\n\n{games}',
+    '⚡ 30초만 투자하세요!\n\n{games}',
     '🧠 두뇌 트레이닝 미니게임\n\n{games}',
     '😴 심심해? 이거 해봐\n\n{games}',
+    '🕹️ 잠깐 쉬면서 게임 한 판?\n\n{games}',
+    '🎯 오늘의 반응속도는?\n\n{games}',
+    '💡 머리 좀 식히고 싶을 때\n\n{games}',
+    '🔥 심심풀이로 딱이야\n\n{games}',
+    '⏰ 1분이면 충분해\n\n{games}',
+    '🎲 랜덤 게임 추천!\n\n{games}',
+    '😎 가볍게 즐기는 미니게임\n\n{games}',
+    '🚀 지금 바로 플레이!\n\n{games}',
   ],
   new_game: [
     '🆕 새 게임 추가!\n\n지금 바로 플레이:\n👉 ' + BASE_URL,
@@ -61,13 +69,21 @@ const TEMPLATES_KO: Record<MessageType, string[]> = {
   ],
 };
 
-// 메시지 템플릿 풀 (영어)
+// 메시지 템플릿 풀 (영어) - Twitter, Facebook용
 const TEMPLATES_EN: Record<MessageType, string[]> = {
   general: [
     '🎮 Fun mini-games for your break!\n\n{games}',
-    '⚡ Test yourself with simple mini-games!\n\n{games}',
+    '⚡ 30 seconds is all you need!\n\n{games}',
     '🧠 Brain training mini-games\n\n{games}',
     '😴 Bored? Try this!\n\n{games}',
+    '🕹️ Quick game while you wait?\n\n{games}',
+    '🎯 Test your reaction speed!\n\n{games}',
+    '💡 Clear your mind with a game\n\n{games}',
+    '🔥 Perfect for killing time\n\n{games}',
+    '⏰ Just 1 minute to play\n\n{games}',
+    '🎲 Random game pick!\n\n{games}',
+    '😎 Light and fun mini-games\n\n{games}',
+    '🚀 Play now, no signup needed!\n\n{games}',
   ],
   new_game: [
     '🆕 New game added!\n\nPlay now:\n👉 ' + BASE_URL,
@@ -81,6 +97,22 @@ const TEMPLATES_EN: Record<MessageType, string[]> = {
     "🏆 Today's ranking!\n\n{ranking}\n\nChallenge yourself:\n👉 " + BASE_URL,
   ],
 };
+
+// Bluesky 전용 템플릿 (영어만, 짧은 버전)
+const TEMPLATES_BLUESKY: string[] = [
+  '🎮 Quick games when you\'re bored!\n\n{games}',
+  '⚡ 30 seconds to test yourself\n\n{games}',
+  '🧠 Train your brain!\n\n{games}',
+  '😴 Bored? Play this!\n\n{games}',
+  '🕹️ Mini games, max fun\n\n{games}',
+  '🎯 How fast are you?\n\n{games}',
+  '💡 Take a break, play a game\n\n{games}',
+  '🔥 Kill time with mini games\n\n{games}',
+  '⏰ 1 minute of fun\n\n{games}',
+  '🎲 Random game time!\n\n{games}',
+  '😎 No signup, just play\n\n{games}',
+  '🚀 Free browser games!\n\n{games}',
+];
 
 // 언어별 템플릿 맵
 const TEMPLATES: Record<Language, Record<MessageType, string[]>> = {
@@ -112,12 +144,25 @@ function formatRanking(entries: RankingEntry[], lang: Language): string {
     .join('\n');
 }
 
+// Bluesky 전용 랜덤 템플릿 선택
+function pickRandomBlueskyTemplate(): string {
+  return TEMPLATES_BLUESKY[Math.floor(Math.random() * TEMPLATES_BLUESKY.length)];
+}
+
 // 메시지 생성
 export function generateMessage(context: MessageContext): string {
-  // 언어 선택: 지정되지 않으면 랜덤
-  const lang = context.lang ?? pickRandomLanguage();
+  let template: string;
+  let lang: Language;
 
-  let template = pickRandomTemplate(context.type, lang);
+  // Bluesky는 전용 템플릿 사용 (영어만, 짧은 버전)
+  if (context.platform === 'bluesky') {
+    template = pickRandomBlueskyTemplate();
+    lang = 'en';
+  } else {
+    // Twitter, Facebook: 랜덤 언어
+    lang = context.lang ?? pickRandomLanguage();
+    template = pickRandomTemplate(context.type, lang);
+  }
 
   // 게임 목록 치환 (플랫폼에 따라 길이 조절)
   if (template.includes('{games}')) {
