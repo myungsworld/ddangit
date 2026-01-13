@@ -1,6 +1,6 @@
 // Social Platform 추상화 타입
 
-export type Platform = 'twitter' | 'bluesky';
+export type Platform = 'twitter' | 'bluesky' | 'facebook';
 
 export type PostStatus = 'success' | 'failed' | 'skipped';
 

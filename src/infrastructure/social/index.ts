@@ -3,11 +3,13 @@
 import { Platform, SocialAdapter } from './types';
 import { TwitterAdapter } from './adapters/twitter';
 import { BlueskyAdapter } from './adapters/bluesky';
+import { FacebookAdapter } from './adapters/facebook';
 
 // 어댑터 레지스트리
 const adapters: Record<Platform, () => SocialAdapter> = {
   twitter: () => new TwitterAdapter(),
   bluesky: () => new BlueskyAdapter(),
+  facebook: () => new FacebookAdapter(),
 };
 
 // 모든 플랫폼 목록 가져오기

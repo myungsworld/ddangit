@@ -15,6 +15,14 @@
 - [x] 클릭 가능한 링크 (facets)
 - [x] 300자 제한 대응 (랜덤 3개 게임)
 
+### Facebook Page
+- [x] Graph API v24.0
+- [x] Page Access Token 발급
+- [x] Link Preview (OG 이미지 자동 표시)
+- [x] Call-to-Action 버튼 ("게임 플레이")
+- [x] 한국어/영어 랜덤 메시지
+- [x] 랜덤 해시태그
+
 ### 알림
 - [x] 이메일 알림 (Resend API)
 - [x] 성공/실패 결과 발송
@@ -61,6 +69,9 @@
 
 # Bluesky만
 ./scripts/promo.sh prod bluesky
+
+# Facebook만
+./scripts/promo.sh prod facebook
 ```
 
 ## 참고

@@ -9,7 +9,7 @@ const BASE_URL = 'https://ddangit.vercel.app';
 export type MessageType = 'general' | 'new_game' | 'update' | 'ranking';
 export type Language = 'ko' | 'en';
 
-export type Platform = 'twitter' | 'bluesky';
+export type Platform = 'twitter' | 'bluesky' | 'facebook';
 
 interface MessageContext {
   type: MessageType;
