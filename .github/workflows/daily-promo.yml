@@ -1,10 +1,14 @@
 name: Daily Promo
 
+# 임시 비활성화 - AdSense 승인 후 활성화 예정
+# on:
+#   schedule:
+#     # 매일 오전 9시 UTC (한국시간 오후 6시)
+#     - cron: '0 9 * * *'
+#   workflow_dispatch: # 수동 실행 가능
+
 on:
-  schedule:
-    # 매일 오전 9시 UTC (한국시간 오후 6시)
-    - cron: '0 9 * * *'
-  workflow_dispatch: # 수동 실행 가능
+  workflow_dispatch: # 수동 실행만 가능 (스케줄 비활성화)
 
 jobs:
   promo:
