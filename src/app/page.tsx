@@ -39,9 +39,20 @@ export default function Home() {
 
       {/* 푸터 */}
       <footer className="text-center py-4 text-gray-600 text-xs">
-        <Link href="/privacy" className="hover:text-gray-400 transition-colors">
-          {t('home.privacy')}
-        </Link>
+        <div className="flex justify-center gap-4 flex-wrap">
+          <Link href="/about" className="hover:text-gray-400 transition-colors">
+            {t('home.about')}
+          </Link>
+          <Link href="/terms" className="hover:text-gray-400 transition-colors">
+            {t('home.terms')}
+          </Link>
+          <Link href="/privacy" className="hover:text-gray-400 transition-colors">
+            {t('home.privacy')}
+          </Link>
+          <Link href="/contact" className="hover:text-gray-400 transition-colors">
+            {t('home.contact')}
+          </Link>
+        </div>
       </footer>
 
       {/* 하단 광고 */}

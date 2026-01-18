@@ -24,8 +24,11 @@
   },
   "home": {
     "logo": "딴짓거리들",
-    "subtitle": "",
-    "privacy": "개인정보 처리방침"
+    "subtitle": "심심할 때 하는 미니게임",
+    "privacy": "개인정보 처리방침",
+    "terms": "이용약관",
+    "about": "소개",
+    "contact": "문의"
   },
   "games": {
     "reaction-speed": {

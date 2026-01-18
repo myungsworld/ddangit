@@ -24,8 +24,11 @@
   },
   "home": {
     "logo": "ddangit",
-    "subtitle": "quick games",
-    "privacy": "Privacy Policy"
+    "subtitle": "Quick games for your break time",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "about": "About",
+    "contact": "Contact"
   },
   "games": {
     "reaction-speed": {
