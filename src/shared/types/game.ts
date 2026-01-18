@@ -8,6 +8,12 @@ export interface GameResult {
   gameId: string;
 }
 
+export interface GameGuide {
+  howToPlay: string[];
+  scoring: string[];
+  tips: string[];
+}
+
 export interface GameMeta {
   id: string;
   name: string;
@@ -21,6 +27,8 @@ export interface GameMeta {
     title: string;
     description: string;
   };
+  // 게임 가이드 (별도 페이지용)
+  guide: GameGuide;
 }
 
 export interface GameState<T = unknown> {

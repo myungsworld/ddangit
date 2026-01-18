@@ -32,7 +32,7 @@ src/
 새 게임 추가 시 **모든 항목**을 완료해야 합니다:
 
 ### 1. 메타데이터 등록
-- [ ] `src/shared/constants/games.ts` - 게임 정보 추가
+- [ ] `src/shared/constants/games.ts` - 게임 정보 추가 (guide 포함 필수)
 - [ ] `README.md` - Games 테이블에 추가
 
 ### 2. 게임 구현
@@ -57,10 +57,12 @@ src/
 
 ### 자동 적용 항목
 - 메인 페이지 게임 목록
-- sitemap.xml
+- sitemap.xml (게임 페이지 + 가이드 페이지)
 - SNS 홍보 메시지
 - SEO 메타데이터
 - 게임 페이지 (동적 라우트)
+- 게임 가이드 페이지 (`/games/[gameId]/guide`)
+- About 페이지 게임 목록
 
 ---
 

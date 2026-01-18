@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { StaticPageLayout } from '@/shared/components/layout';
 import { SITE_INFO, ABOUT_CONTENT } from '@/shared/constants/static-pages';
+import { GAMES } from '@/shared/constants';
 
 export const metadata: Metadata = {
   title: `About | ${SITE_INFO.name}`,
@@ -41,12 +43,26 @@ export default function AboutPage() {
       <section>
         <h2 className="text-xl font-semibold text-white mb-4">Our Games</h2>
         <div className="space-y-4">
-          {Object.entries(ABOUT_CONTENT.gameDescriptions).map(([id, game]) => (
-            <div key={id} className="bg-gray-900 rounded-lg p-4">
+          {GAMES.map((game) => (
+            <div key={game.id} className="bg-gray-900 rounded-lg p-4">
               <h3 className="font-semibold text-white flex items-center gap-2">
                 <span>{game.icon}</span> {game.name}
               </h3>
-              <p className="text-sm text-gray-400 mt-2">{game.description}</p>
+              <p className="text-sm text-gray-400 mt-2">{game.seo.description}</p>
+              <div className="mt-3 flex gap-3">
+                <Link
+                  href={game.path}
+                  className="text-sm text-blue-400 hover:underline"
+                >
+                  Play Now →
+                </Link>
+                <Link
+                  href={`${game.path}/guide`}
+                  className="text-sm text-gray-400 hover:text-white"
+                >
+                  How to Play
+                </Link>
+              </div>
             </div>
           ))}
         </div>

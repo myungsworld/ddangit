@@ -40,7 +40,13 @@ export function GameLayout({ children, gameId, color }: GameLayoutProps) {
         <h1 className="font-bold" style={{ color }}>
           {title}
         </h1>
-        <div className="w-6" />
+        <Link
+          href={`/games/${gameId}/guide`}
+          className="text-gray-400 hover:text-white transition-colors text-lg"
+          title="How to play"
+        >
+          ?
+        </Link>
       </header>
 
       {/* Game Area - flex-1 ensures it takes remaining space */}
