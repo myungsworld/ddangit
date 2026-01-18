@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   }
 
   return {
-    title: `How to Play ${game.name} | ddangit`,
-    description: `Learn how to play ${game.name}. Complete guide with rules, scoring system, and tips to improve your game.`,
+    title: `How to Play ${game.name} - Complete Guide | ddangit`,
+    description: `Master ${game.name} with our comprehensive guide. Learn game rules, scoring system, pro strategies, tips, and FAQs. Start playing like a pro today!`,
   };
 }
 
@@ -49,11 +49,19 @@ export default function GameGuidePage({ params }: { params: Params }) {
             <span>{game.icon}</span>
             <span style={{ color: game.color }}>{game.name}</span>
           </h1>
-          <p className="text-gray-400 mt-2">{game.seo.description}</p>
+          <p className="text-gray-400 mt-2">Complete Guide & Strategy</p>
         </div>
 
         {/* Guide Content */}
         <div className="space-y-8">
+          {/* Introduction */}
+          <section className="bg-gray-900 rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <span className="text-2xl">📖</span> Introduction
+            </h2>
+            <p className="text-gray-300 leading-relaxed">{guide.introduction}</p>
+          </section>
+
           {/* How to Play */}
           <section className="bg-gray-900 rounded-xl p-6">
             <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
@@ -89,10 +97,10 @@ export default function GameGuidePage({ params }: { params: Params }) {
             </ul>
           </section>
 
-          {/* Tips & Strategies */}
+          {/* Tips */}
           <section className="bg-gray-900 rounded-xl p-6">
             <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <span className="text-2xl">💡</span> Tips & Strategies
+              <span className="text-2xl">💡</span> Tips & Tricks
             </h2>
             <ul className="space-y-2 text-gray-300">
               {guide.tips.map((tip, i) => (
@@ -103,6 +111,66 @@ export default function GameGuidePage({ params }: { params: Params }) {
               ))}
             </ul>
           </section>
+
+          {/* Advanced Strategies */}
+          {guide.strategies && guide.strategies.length > 0 && (
+            <section className="bg-gray-900 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="text-2xl">🎯</span> Advanced Strategies
+              </h2>
+              <div className="space-y-4 text-gray-300">
+                {guide.strategies.map((strategy, i) => (
+                  <div key={i} className="border-l-2 border-gray-700 pl-4">
+                    <p>{strategy}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* History & Background */}
+          {guide.history && (
+            <section className="bg-gray-900 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="text-2xl">📚</span> History & Background
+              </h2>
+              <p className="text-gray-300 leading-relaxed">{guide.history}</p>
+            </section>
+          )}
+
+          {/* FAQ */}
+          {guide.faq && guide.faq.length > 0 && (
+            <section className="bg-gray-900 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="text-2xl">❓</span> Frequently Asked Questions
+              </h2>
+              <div className="space-y-4">
+                {guide.faq.map((item, i) => (
+                  <div key={i} className="border-b border-gray-800 pb-4 last:border-0 last:pb-0">
+                    <h3 className="text-white font-medium mb-2">Q: {item.question}</h3>
+                    <p className="text-gray-400 text-sm">A: {item.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Fun Facts */}
+          {guide.funFacts && guide.funFacts.length > 0 && (
+            <section className="bg-gray-900 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="text-2xl">🎲</span> Fun Facts
+              </h2>
+              <ul className="space-y-2 text-gray-300">
+                {guide.funFacts.map((fact, i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="text-purple-400">•</span>
+                    <span>{fact}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* Play Now CTA */}
           <div className="text-center pt-4">

@@ -9,9 +9,16 @@ export interface GameResult {
 }
 
 export interface GameGuide {
+  // 기본 정보
+  introduction: string; // 게임 소개 (2-3 문장)
   howToPlay: string[];
   scoring: string[];
   tips: string[];
+  // 확장 콘텐츠 (AdSense용 800+ 단어)
+  history?: string; // 게임 역사/배경
+  strategies?: string[]; // 고급 전략
+  faq?: { question: string; answer: string }[]; // FAQ
+  funFacts?: string[]; // 재미있는 사실
 }
 
 export interface GameMeta {
